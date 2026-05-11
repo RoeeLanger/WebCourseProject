@@ -1,0 +1,48 @@
+/* ============================================
+   Bookies — Register Page Styles
+   (depends on style.css and login.css)
+   ============================================ */
+
+.register-main {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  align-items: flex-start;
+}
+
+.register-card {
+  max-width: 460px;
+}
+
+/* Custom select arrow to match the vintage input style */
+.form-select-vintage {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b5f59' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.form-select-vintage option {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--cream);
+}
+
+/* Keep focus ring consistent with inputs */
+.form-select-vintage:focus {
+  border-color: var(--dusty-rose);
+  box-shadow: 0 0 0 3px rgba(201, 169, 154, 0.15);
+}
+
+.form-select-vintage.is-invalid {
+  border-color: #b85050;
+  box-shadow: 0 0 0 3px rgba(184, 80, 80, 0.1);
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 2rem 1.5rem;
+  }
+}
