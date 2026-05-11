@@ -37,12 +37,14 @@ buildOptions(q1Select);
 buildOptions(q2Select);
 
 q1Select.addEventListener("change", () => {
+  if (q1Select.value === q2Select.value) q2Select.value = "";
   buildOptions(q2Select, Number(q1Select.value));
   clearError("securityQ1Error");
   q1Select.classList.remove("is-invalid");
 });
 
 q2Select.addEventListener("change", () => {
+  if (q2Select.value === q1Select.value) q2Select.value = "";
   clearError("securityQ2Error");
   q2Select.classList.remove("is-invalid");
 });
