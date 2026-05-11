@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Bookies — Dashboard</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body class="dashboard-page">
+
+  <!-- ===== HEADER ===== -->
+  <header class="landing-header login-header">
+
+    <a href="index.html" class="site-logo">
+      Bookies
+    </a>
+
+    <nav class="header-nav">
+
+      <a href="#" class="nav-link-vintage">
+        My Clubs
+      </a>
+
+      <a href="#" class="nav-link-vintage">
+        Calendar
+      </a>
+
+      <a href="#" class="nav-link-vintage">
+        Logout
+      </a>
+
+    </nav>
+
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="dashboard-main">
+
+    <!-- VIDEO SECTION -->
+    <section class="dashboard-video-section">
+
+      <video
+        autoplay
+        muted
+        playsinline
+        class="dashboard-video"
+        id="heroVideo"
+      >
+        <source src="videos/272756_tiny.mp4" type="video/mp4">
+      </video>
+
+      <div class="dashboard-video-overlay"></div>
+
+      <div class="dashboard-video-text">
+
+        <p class="dashboard-eyebrow">
+          Your Reading Space
+        </p>
+
+        <h1 class="profile-name" id="profileName">
+          Welcome back
+        </h1>
+
+        <p class="profile-subtitle" id="profileSubtitle">
+          No user data available yet.
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- PROFILE STATS -->
+    <section class="glass-section">
+
+      <div class="profile-stats">
+
+        <div class="stat-item">
+
+          <span class="stat-number" id="clubsCount">
+            0
+          </span>
+
+          <span class="stat-label">
+            Clubs
+          </span>
+
+        </div>
+
+        <div class="stat-item">
+
+          <span class="stat-number" id="managedCount">
+            0
+          </span>
+
+          <span class="stat-label">
+            Managed
+          </span>
+
+        </div>
+
+        <div class="stat-item">
+
+          <span class="stat-number" id="meetingsCount">
+            0
+          </span>
+
+          <span class="stat-label">
+            Meetings
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- CLUBS -->
+    <section class="dashboard-section">
+
+      <div class="section-header">
+
+        <h2 class="section-title">
+          Your Clubs
+        </h2>
+
+      </div>
+
+      <div class="clubs-grid" id="clubsGrid"></div>
+
+    </section>
+
+    <!-- MEETINGS -->
+    <section class="dashboard-section">
+
+      <div class="section-header">
+
+        <h2 class="section-title">
+          Upcoming Meetings
+        </h2>
+
+      </div>
+
+      <div class="meetings-list" id="meetingsList"></div>
+
+    </section>
+
+  </main>
+
+  <script src="js/dashboard.js"></script>
+
+  <script>
+
+    const heroVideo =
+      document.getElementById("heroVideo");
+
+    heroVideo.addEventListener("ended", () => {
+
+      setTimeout(() => {
+
+        heroVideo.currentTime = 0;
+
+        heroVideo.play();
+
+      }, 10000);
+
+    });
+
+  </script>
+
+</body>
+</html>
