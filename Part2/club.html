@@ -31,7 +31,7 @@
         Calendar
       </a>
 
-      <a href="#" class="nav-link-vintage">
+      <a href="#" class="nav-link-vintage" id="logout-btn">
         Logout
       </a>
 
@@ -241,6 +241,14 @@
     </section>
 
   </main>
+
+  <script>
+    document.getElementById("logout-btn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.removeItem("bookies_session");
+      window.location.href = "login.html";
+    });
+  </script>
 
 </body>
 </html>

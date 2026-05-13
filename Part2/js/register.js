@@ -140,6 +140,18 @@ document.getElementById("registerForm").addEventListener("submit", function (e) 
     showError("passwordError", "Password must be at least 8 characters.");
     setInvalid("password", true);
     valid = false;
+  } else if (!/[A-Z]/.test(password)) {
+    showError("passwordError", "Password must contain at least one uppercase letter.");
+    setInvalid("password", true);
+    valid = false;
+  } else if (!/[a-z]/.test(password)) {
+    showError("passwordError", "Password must contain at least one lowercase letter.");
+    setInvalid("password", true);
+    valid = false;
+  } else if (!/[0-9]/.test(password)) {
+    showError("passwordError", "Password must contain at least one number.");
+    setInvalid("password", true);
+    valid = false;
   }
 
   if (!confirmPassword) {
@@ -204,6 +216,7 @@ document.getElementById("registerForm").addEventListener("submit", function (e) 
     securityAnswer1: securityA1,
     securityAnswer2: securityA2,
     clubs: [],
+    managedClub: null,
     joinDate: new Date().toISOString(),
   };
 
