@@ -2,6 +2,12 @@ const users = JSON.parse(localStorage.getItem("bookies_users")) || [];
 const sessionUsername = localStorage.getItem("bookies_session");
 const currentUser = users.find((u) => u.username === sessionUsername) || null;
 
+document.getElementById("logout-btn").addEventListener("click", (e) => {
+  e.preventDefault();
+  localStorage.removeItem("bookies_session");
+  window.location.href = "login.html";
+});
+
 // ===== ELEMENTS =====
 
 const profileName =

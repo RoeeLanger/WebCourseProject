@@ -190,7 +190,17 @@
 
 .toggle-pw:hover { color: var(--ink); }
 
-/* --- Errors --- */
+/* --- Hints & Errors --- */
+.field-hint {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--ink);
+  opacity: 0.55;
+  font-style: italic;
+  display: block;
+  margin-top: 0.25rem;
+}
+
 .field-error {
   font-family: var(--font-body);
   font-size: 0.78rem;
