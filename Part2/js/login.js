@@ -58,7 +58,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   );
 
   if (!user) {
-    showError("generalError", "Incorrect email or password.");
+    showError("generalError", "Incorrect email or password.") ;
     return;
   }
 
