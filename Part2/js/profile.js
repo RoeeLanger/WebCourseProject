@@ -2,6 +2,50 @@ const users = JSON.parse(localStorage.getItem("bookies_users")) || [];
 const sessionUsername = localStorage.getItem("bookies_session");
 const currentUser = users.find((u) => u.username === sessionUsername) || null;
 
+// ===== CLUB SEARCH =====
+
+const clubs = JSON.parse(localStorage.getItem("bookies_clubs")) || [];
+const clubSearchInput = document.getElementById("clubSearch");
+const searchDropdown = document.getElementById("searchDropdown");
+
+clubSearchInput.addEventListener("input", () => {
+  const term = clubSearchInput.value.trim().toLowerCase();
+  searchDropdown.innerHTML = "";
+
+  if (!term) {
+    searchDropdown.hidden = true;
+    return;
+  }
+
+  const matches = clubs.filter((c) =>
+    c["club-title"].toLowerCase().includes(term)
+  );
+
+  if (matches.length === 0) {
+    searchDropdown.innerHTML =
+      `<li class="search-no-results">No clubs found</li>`;
+  } else {
+    matches.forEach((club) => {
+      const li = document.createElement("li");
+      li.className = "search-result-item";
+      li.textContent = club["club-title"];
+      li.addEventListener("click", () => {
+        window.location.href =
+          `club.html?id=${encodeURIComponent(club["club-title"])}`;
+      });
+      searchDropdown.appendChild(li);
+    });
+  }
+
+  searchDropdown.hidden = false;
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".header-search")) {
+    searchDropdown.hidden = true;
+  }
+});
+
 document.getElementById("logout-btn").addEventListener("click", (e) => {
   e.preventDefault();
   localStorage.removeItem("bookies_session");
