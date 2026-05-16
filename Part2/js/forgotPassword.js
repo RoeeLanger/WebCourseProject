@@ -52,7 +52,7 @@ document.getElementById("step1Form").addEventListener("submit", function (e) {
     return;
   }
 
-  const users = JSON.parse(localStorage.getItem("bookies_users") || "[]");
+  const users = getUsers();
   const idx   = users.findIndex(
     (u) => u.email.toLowerCase() === email.toLowerCase()
   );
@@ -214,9 +214,8 @@ document.getElementById("step3Form").addEventListener("submit", function (e) {
   if (!valid) return;
 
   // --- Save updated password ---
-  const users      = JSON.parse(localStorage.getItem("bookies_users") || "[]");
-  users[userIndex].password = newPw;
-  localStorage.setItem("bookies_users", JSON.stringify(users));
+  foundUser.password = newPw;
+  saveUser(foundUser);
 
   // Redirect to login with a small success indicator in the URL
   window.location.href = "login.html?reset=success";

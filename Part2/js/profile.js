@@ -1,10 +1,8 @@
-const users = JSON.parse(localStorage.getItem("bookies_users")) || [];
-const sessionUsername = localStorage.getItem("bookies_session");
-const currentUser = users.find((u) => u.username === sessionUsername) || null;
+const currentUser = getCurrentUser();
 
 // ===== CLUB SEARCH =====
 
-const clubs = JSON.parse(localStorage.getItem("bookies_clubs")) || [];
+const clubs = getClubs();
 const clubSearchInput = document.getElementById("clubSearch");
 const searchDropdown = document.getElementById("searchDropdown");
 
@@ -18,7 +16,7 @@ clubSearchInput.addEventListener("input", () => {
   }
 
   const matches = clubs.filter((c) =>
-    c["club-title"].toLowerCase().includes(term)
+    (c.clubTitle || "").toLowerCase().includes(term)
   );
 
   if (matches.length === 0) {
@@ -28,10 +26,10 @@ clubSearchInput.addEventListener("input", () => {
     matches.forEach((club) => {
       const li = document.createElement("li");
       li.className = "search-result-item";
-      li.textContent = club["club-title"];
+      li.textContent = club.clubTitle;
       li.addEventListener("click", () => {
         window.location.href =
-          `club.html?id=${encodeURIComponent(club["club-title"])}`;
+          `club.html?clubTitle=${encodeURIComponent(club.clubTitle)}`;
       });
       searchDropdown.appendChild(li);
     });
@@ -92,16 +90,18 @@ if (currentUser) {
 
   // STATS
 
-  clubsCount.textContent =
-    currentUser.clubs.length;
+  const allClubNames = [...new Set([
+    ...currentUser.clubs,
+    ...(currentUser.managedClub ? [currentUser.managedClub] : []),
+  ])];
 
-  managedCount.textContent = "0";
-
+  clubsCount.textContent   = allClubNames.length;
+  managedCount.textContent = currentUser.managedClub ? 1 : 0;
   meetingsCount.textContent = "0";
 
   // CLUBS
 
-  if (currentUser.clubs.length === 0) {
+  if (allClubNames.length === 0) {
 
     clubsGrid.innerHTML = `
       <div class="empty-state">
@@ -111,31 +111,18 @@ if (currentUser) {
 
   } else {
 
-    currentUser.clubs.forEach((clubName) => {
+    allClubNames.forEach((clubName) => {
+      const clubData = clubs.find(c => c.clubTitle === clubName);
+      const desc     = clubData ? clubData.description : "";
+      const isManager = clubName === currentUser.managedClub;
+      const badge    = isManager ? "Manager" : "Member";
 
       clubsGrid.innerHTML += `
-
-        <article class="club-card">
-
-          <span class="member-badge">
-            Member
-          </span>
-
-          <h3 class="club-name">
-            ${clubName}
-          </h3>
-
-          <p class="club-book">
-            Currently reading
-            <span>Unknown Book</span>
-          </p>
-
-          <p class="club-description">
-            Club information will appear here later.
-          </p>
-
+        <article class="club-card" style="cursor:pointer;" onclick="window.location.href='club.html?clubTitle=${encodeURIComponent(clubName)}'">
+          <span class="member-badge">${badge}</span>
+          <h3 class="club-name">${clubName}</h3>
+          <p class="club-description">${desc || "No description yet."}</p>
         </article>
-
       `;
     });
   }

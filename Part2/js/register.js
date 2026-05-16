@@ -191,7 +191,7 @@ document.getElementById("registerForm").addEventListener("submit", function (e) 
   if (!valid) return;
 
   // Check uniqueness against stored users
-  const users = JSON.parse(localStorage.getItem("bookies_users") || "[]");
+  const users = getUsers();
 
   if (users.some((u) => u.username.toLowerCase() === username.toLowerCase())) {
     showError("usernameError", "This username is already taken.");
@@ -221,7 +221,7 @@ document.getElementById("registerForm").addEventListener("submit", function (e) 
   };
 
   users.push(User);
-  localStorage.setItem("bookies_users", JSON.stringify(users));
+  saveUsers(users);
 
   window.location.href = "login.html";
 });
