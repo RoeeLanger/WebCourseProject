@@ -315,6 +315,86 @@
 
     .btn-vintage:hover { background: var(--ink-light); transform: translateY(-2px); }
 
+    .btn-secondary {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+      background: transparent;
+      padding: 0.85rem 2.6rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .btn-secondary:hover { background: rgba(120,90,70,0.08); border-color: var(--dusty-rose); }
+
+    .club-title-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.1rem;
+    }
+
+    .btn-join-club {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: rgba(250, 247, 242, 0.88);
+      background: rgba(250, 247, 242, 0.08);
+      border: 1px solid rgba(201, 169, 154, 0.4);
+      border-radius: 4px;
+      padding: 0.75rem 2.2rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .btn-join-club:hover {
+      background: rgba(250, 247, 242, 0.14);
+      border-color: rgba(201, 169, 154, 0.7);
+      box-shadow: 0 0 18px rgba(201, 169, 154, 0.25);
+    }
+
+    .btn-delete-club {
+      color: rgba(235, 155, 145, 0.9);
+      background: rgba(210, 70, 60, 0.08);
+      border-color: rgba(210, 90, 80, 0.35);
+    }
+
+    .btn-delete-club:hover {
+      background: rgba(210, 70, 60, 0.15);
+      border-color: rgba(210, 90, 80, 0.65);
+      box-shadow: 0 0 18px rgba(200, 60, 50, 0.22);
+    }
+
+    .delete-confirm-modal {
+      text-align: center;
+    }
+
+    .delete-confirm-icon {
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .delete-confirm-text {
+      color: var(--ink-light);
+      line-height: 1.75;
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .delete-confirm-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
     /* ============================================
        MEETINGS
     ============================================ */
@@ -1049,7 +1129,7 @@
       min-height: 1rem;
       margin-bottom: 0.2rem;
     }
-    ============================================ */
+    /*============================================ */
     @media (max-width: 900px) {
       .hero-video-content { padding: 0 1.2rem 3rem; }
       .current-book-layout { flex-direction: column; align-items: flex-start; }
@@ -1069,7 +1149,7 @@
   <header class="landing-header">
     <a href="profile.html" class="site-logo">Bookies</a>
     <nav class="header-nav">
-      <a href="#" class="nav-link-vintage">Dashboard</a>
+      <a href="profile.html" class="nav-link-vintage">Dashboard</a>
       <a href="#" class="nav-link-vintage">Calendar</a>
       <button class="nav-link-vintage" id="logout-btn">Logout</button>
     </nav>
@@ -1089,7 +1169,10 @@
     <div class="hero-video-content">
       <div class="hero-video-inner">
         <span class="club-tag">Fantasy Club</span>
-        <h1 class="club-title">Fantasy Lovers</h1>
+        <div class="club-title-row">
+          <h1 class="club-title">Fantasy Lovers</h1>
+          <button class="btn-join-club" id="join-club-btn" style="display:none;">Join Club ✦</button>
+        </div>
         <p class="club-description">
           A cozy reading club for fantasy lovers,
           dragons, morally questionable characters
@@ -1573,6 +1656,20 @@
 
   </main>
 
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="modal-overlay" id="delete-confirm-overlay">
+    <div class="member-modal delete-confirm-modal">
+      <div class="delete-confirm-icon">🗑️</div>
+      <div class="modal-name">Delete this club?</div>
+      <p class="delete-confirm-text"><strong id="delete-club-name"></strong> will be permanently deleted. All members will lose access and this cannot be undone.</p>
+      <div class="modal-divider"></div>
+      <div class="delete-confirm-actions">
+        <button class="btn-vintage" id="delete-confirm-yes">Yes, delete it</button>
+        <button class="btn-secondary" id="delete-confirm-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MEMBER MODAL -->
   <div class="modal-overlay" id="member-modal-overlay" onclick="closeMemberModal(event)">
     <div class="member-modal" id="member-modal">
@@ -1596,11 +1693,147 @@
     </div>
   </div>
 
+  <script src="js/club.js"></script>
   <script>
+    // ============================================
+    // LOAD CLUB FROM LOCALSTORAGE
+    // ============================================
+    (function () {
+      const BG_GRADIENTS = {
+        'videos/288559_tiny.mp4': 'linear-gradient(160deg, #3d2e26 0%, #5a3e2f 60%, #2e2520 100%)',
+        'videos/bg_ocean.mp4':    'linear-gradient(160deg, #1a2a3d 0%, #2a4060 60%, #0d1820 100%)',
+        'videos/bg_meadow.mp4':   'linear-gradient(160deg, #2a3d1a 0%, #406030 60%, #0d1808 100%)',
+        'videos/bg_night.mp4':    'linear-gradient(160deg, #3d1a2a 0%, #602040 60%, #180d18 100%)',
+        'videos/bg_autumn.mp4':   'linear-gradient(160deg, #3d3020 0%, #605040 60%, #181408 100%)',
+        'videos/bg_rain.mp4':     'linear-gradient(160deg, #1a3040 0%, #205060 60%, #080e18 100%)',
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const rawTitle = params.get("clubTitle");
+      if (!rawTitle) { window.location.href = "profile.html"; return; }
+      const club = getClubByTitle(decodeURIComponent(rawTitle));
+      if (!club) { window.location.href = "profile.html"; return; }
+
+      document.title = "Bookies — " + club.clubTitle;
+
+      // Hero video & fallback gradient
+      if (club.background) {
+        const vid = document.querySelector(".hero-video-bg");
+        vid.querySelector("source").src = club.background;
+        vid.load();
+        vid.play().catch(() => {});
+        const fallback = document.querySelector(".hero-video-fallback");
+        if (BG_GRADIENTS[club.background]) fallback.style.background = BG_GRADIENTS[club.background];
+      }
+
+      // Hero text
+      document.querySelector(".club-title").textContent = club.clubTitle;
+      document.querySelector(".club-description").textContent = club.description || "";
+
+      // Announcements — empty state for new clubs
+      if (!club.announcements || club.announcements.length === 0) {
+        document.getElementById("latest-announcement").innerHTML =
+          '<p class="announcement-text" style="color:var(--ink-light);font-style:italic;">No announcements yet.</p>';
+        document.getElementById("toggle-history-btn").style.display = "none";
+      }
+
+      // Meetings — empty state for new clubs
+      if (!club.meetings || club.meetings.length === 0) {
+        document.querySelector(".meetings-list").innerHTML =
+          '<div style="color:var(--ink-light);font-style:italic;padding:0.5rem 0;">No upcoming meetings scheduled.</div>';
+      }
+
+      // Build members array from bookies_users
+      const allUsers = getUsers();
+      window.MEMBERS = club.members.map(function (username) {
+        const user = allUsers.find(u => u.username === username)
+          || { username, nickname: username, clubs: [], joinDate: null };
+        const isManager = username === club.managerUsername;
+        return {
+          initial: (user.nickname || user.username)[0].toUpperCase(),
+          nickname: user.nickname || user.username,
+          username: "@" + username,
+          isManager,
+          joinDate: user.joinDate
+            ? new Date(user.joinDate).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+            : "Unknown",
+          clubs: (user.clubs || []).map(function (cName) {
+            return {
+              name: cName,
+              role: (username === club.managerUsername && cName === club.clubTitle) ? "Manager" : "Member"
+            };
+          })
+        };
+      });
+
+      // Manager spotlight
+      const managerData = window.MEMBERS.find(m => m.isManager);
+      if (managerData) {
+        document.querySelector(".manager-spotlight-avatar").textContent = managerData.initial;
+        document.querySelector(".manager-spotlight-name").textContent = managerData.nickname;
+        document.querySelector(".manager-spotlight-username").textContent = managerData.username;
+        const managerIdx = window.MEMBERS.indexOf(managerData);
+        document.querySelector(".manager-spotlight button")
+          .setAttribute("onclick", "openMemberModal(" + managerIdx + ")");
+      }
+
+      // Join / Leave button
+      const currentUser = getCurrentUser();
+      const joinBtn = document.getElementById("join-club-btn");
+      if (currentUser) {
+        const isMember  = club.members.includes(currentUser.username);
+        const isManager = currentUser.username === club.managerUsername;
+
+        if (!isMember) {
+          joinBtn.style.display = "inline-block";
+          joinBtn.addEventListener("click", function () {
+            club.members.push(currentUser.username);
+            saveClub(club);
+            if (!currentUser.clubs.includes(club.clubTitle)) {
+              currentUser.clubs.push(club.clubTitle);
+              saveUser(currentUser);
+            }
+            window.location.reload();
+          });
+        } else if (!isManager) {
+          joinBtn.textContent = "Leave Club";
+          joinBtn.style.display = "inline-block";
+          joinBtn.addEventListener("click", function () {
+            club.members = club.members.filter(u => u !== currentUser.username);
+            saveClub(club);
+            currentUser.clubs = currentUser.clubs.filter(c => c !== club.clubTitle);
+            saveUser(currentUser);
+            window.location.reload();
+          });
+        } else {
+          joinBtn.innerHTML = "🗑 Delete Club";
+          joinBtn.classList.add("btn-delete-club");
+          joinBtn.style.display = "inline-block";
+          document.getElementById("delete-club-name").textContent = '"' + club.clubTitle + '"';
+          const deleteOverlay = document.getElementById("delete-confirm-overlay");
+          joinBtn.addEventListener("click", () => deleteOverlay.classList.add("open"));
+          document.getElementById("delete-confirm-cancel").addEventListener("click", () => deleteOverlay.classList.remove("open"));
+          deleteOverlay.addEventListener("click", function (e) {
+            if (e.target === deleteOverlay) deleteOverlay.classList.remove("open");
+          });
+          document.getElementById("delete-confirm-yes").addEventListener("click", function () {
+            saveClubs(getClubs().filter(c => c.clubTitle !== club.clubTitle));
+            const allUsers = getUsers();
+            allUsers.forEach(function (u) {
+              u.clubs = (u.clubs || []).filter(c => c !== club.clubTitle);
+              if (u.managedClub === club.clubTitle) u.managedClub = null;
+            });
+            saveUsers(allUsers);
+            window.location.href = "profile.html";
+          });
+        }
+      }
+    })();
+
     // ============================================
     // DATA
     // ============================================
-    const MEMBERS = [
+    const MEMBERS = window.MEMBERS || [
       {
         initial: "V",
         nickname: "Vanessa",

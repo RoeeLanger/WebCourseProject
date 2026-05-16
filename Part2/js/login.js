@@ -71,7 +71,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
 
   if (!valid) return;
 
-  const users = JSON.parse(localStorage.getItem("bookies_users") || "[]");
+  const users = getUsers();
   const user  = users.find(
     (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
   );
