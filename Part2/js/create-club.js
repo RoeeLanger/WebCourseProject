@@ -1,4 +1,118 @@
 // ============================================
+// BACKGROUND PICKER STATE
+// ============================================
+let selectedBg = null;
+
+document.querySelectorAll(".bg-option").forEach(option => {
+  option.addEventListener("click", function () {
+    document.querySelectorAll(".bg-option").forEach(o => o.classList.remove("selected"));
+    this.classList.add("selected");
+    this.querySelector("input").checked = true;
+    selectedBg = this.dataset.val;
+    document.getElementById("bg-error").textContent = "";
+
+    const vid      = document.getElementById("preview-video");
+    const fallback = document.getElementById("preview-bg-fallback");
+    vid.src           = selectedBg;
+    vid.style.display = "block";
+    vid.load();
+    vid.play().catch(() => {});
+    fallback.style.display = "none";
+  });
+});
+
+// ============================================
+// MEMBER LIMIT SLIDER
+// ============================================
+const slider  = document.getElementById("member-limit");
+const display = document.getElementById("limit-display");
+
+function updateSlider() {
+  const val = parseInt(slider.value);
+  const min = parseInt(slider.min);
+  const max = parseInt(slider.max);
+  const pct = ((val - min) / (max - min) * 100).toFixed(1);
+  slider.style.setProperty("--pct", pct + "%");
+  display.childNodes[0].textContent = val;
+}
+
+function setLimit(val) {
+  slider.value = val;
+  updateSlider();
+}
+
+slider.addEventListener("input", updateSlider);
+updateSlider();
+
+// ============================================
+// EDIT MODE DETECTION
+// ============================================
+const editTitle  = new URLSearchParams(window.location.search).get("edit");
+const isEditMode = !!editTitle;
+let editClub     = null;
+
+if (isEditMode) {
+  editClub = getClubs().find(c => c.clubTitle === editTitle) || null;
+
+  document.getElementById("page-eyebrow").textContent  = "Manage your club";
+  document.getElementById("page-title").textContent    = "Edit Club";
+  document.getElementById("page-subtitle").textContent =
+    "Update your club's details below. The club name cannot be changed.";
+  document.getElementById("submit-btn").textContent    = "Save Changes ✦";
+
+  const cancelBtn = document.getElementById("cancel-btn");
+  cancelBtn.href  = "club.html?clubTitle=" + encodeURIComponent(editTitle);
+
+  if (editClub) {
+    // Lock name field
+    const nameInput    = document.getElementById("club-name");
+    nameInput.value    = editClub.clubTitle;
+    nameInput.disabled = true;
+    document.getElementById("club-name-hint").textContent =
+      "The club name cannot be changed after creation.";
+
+    // Pre-fill description
+    const descInput = document.getElementById("club-desc");
+    descInput.value = editClub.description || "";
+
+    // Update live preview
+    document.getElementById("preview-name").textContent = editClub.clubTitle;
+    if (editClub.description) {
+      document.getElementById("preview-desc").textContent = editClub.description;
+    }
+
+    // Pre-select background
+    if (editClub.background) {
+      const match = document.querySelector(`.bg-option[data-val="${CSS.escape(editClub.background)}"]`);
+      if (match) {
+        match.classList.add("selected");
+        match.querySelector("input").checked = true;
+        selectedBg = editClub.background;
+
+        const vid      = document.getElementById("preview-video");
+        const fallback = document.getElementById("preview-bg-fallback");
+        vid.src           = editClub.background;
+        vid.style.display = "block";
+        vid.load();
+        vid.play().catch(() => {});
+        fallback.style.display = "none";
+      }
+    }
+
+    // Enforce minimum = current member count
+    const currentMemberCount = (editClub.members || []).length;
+    if (currentMemberCount > 2) {
+      slider.min = currentMemberCount;
+    }
+
+    // Pre-set member limit (clamped to new min)
+    const presetLimit = Math.max(editClub.maxMembers || 10, currentMemberCount);
+    slider.value = presetLimit;
+    updateSlider();
+  }
+}
+
+// ============================================
 // CHAR COUNTERS
 // ============================================
 function initCharCounter(inputId, countId, max) {
@@ -35,51 +149,6 @@ document.getElementById("club-desc").addEventListener("input", function () {
 });
 
 // ============================================
-// BACKGROUND PICKER
-// ============================================
-let selectedBg = null;
-
-document.querySelectorAll(".bg-option").forEach(option => {
-  option.addEventListener("click", function () {
-    document.querySelectorAll(".bg-option").forEach(o => o.classList.remove("selected"));
-    this.classList.add("selected");
-    this.querySelector("input").checked = true;
-    selectedBg = this.dataset.val;
-    document.getElementById("bg-error").textContent = "";
-
-    // Update preview video
-    const vid = document.getElementById("preview-video");
-    const fallback = document.getElementById("preview-bg-fallback");
-    vid.src = selectedBg;
-    vid.style.display = "block";
-    vid.load();
-    vid.play().catch(() => {});
-    fallback.style.display = "none";
-  });
-});
-
-// ============================================
-// MEMBER LIMIT SLIDER
-// ============================================
-const slider = document.getElementById("member-limit");
-const display = document.getElementById("limit-display");
-
-function updateSlider() {
-  const val = parseInt(slider.value);
-  const pct = ((val - 2) / 48 * 100).toFixed(1);
-  slider.style.setProperty("--pct", pct + "%");
-  display.childNodes[0].textContent = val;
-}
-
-function setLimit(val) {
-  slider.value = val;
-  updateSlider();
-}
-
-slider.addEventListener("input", updateSlider);
-updateSlider();
-
-// ============================================
 // VALIDATION & SUBMIT
 // ============================================
 function showError(id, msg) { document.getElementById(id).textContent = msg; }
@@ -94,29 +163,32 @@ document.getElementById("create-club-form").addEventListener("submit", function 
   clearError("bg-error");
   document.getElementById("general-error").style.display = "none";
 
-  // Guard: only one managed club allowed
   const sessionUserData = getCurrentUser();
-  if (sessionUserData && sessionUserData.managedClub) {
+
+  // Guard: only one managed club allowed (skip in edit mode)
+  if (!isEditMode && sessionUserData && sessionUserData.managedClub) {
     const ge = document.getElementById("general-error");
     ge.textContent = `You already manage "${sessionUserData.managedClub}". Each member can only manage one club.`;
     ge.style.display = "block";
     return;
   }
 
-  const clubName    = document.getElementById("club-name").value.trim();
+  const clubName    = isEditMode ? editTitle : document.getElementById("club-name").value.trim();
   const clubDesc    = document.getElementById("club-desc").value.trim();
   const memberLimit = parseInt(slider.value);
 
   let valid = true;
 
-  if (!clubName) {
-    showError("club-name-error", "Please give your club a name.");
-    setInvalid("club-name", true);
-    valid = false;
-  } else if (clubName.length > 40) {
-    showError("club-name-error", "Club name must be 40 characters or fewer.");
-    setInvalid("club-name", true);
-    valid = false;
+  if (!isEditMode) {
+    if (!clubName) {
+      showError("club-name-error", "Please give your club a name.");
+      setInvalid("club-name", true);
+      valid = false;
+    } else if (clubName.length > 40) {
+      showError("club-name-error", "Club name must be 40 characters or fewer.");
+      setInvalid("club-name", true);
+      valid = false;
+    }
   }
 
   if (!clubDesc) {
@@ -135,24 +207,35 @@ document.getElementById("create-club-form").addEventListener("submit", function 
     return;
   }
 
-  const managerUsername = sessionUserData.username;
-  const club = createClub({
-    clubTitle: clubName,
-    managerUsername,
-    description: clubDesc,
-    maxMembers: memberLimit,
-    background: selectedBg,
-  });
-  saveClub(club);
+  if (isEditMode) {
+    const clubs = getClubs();
+    const idx   = clubs.findIndex(c => c.clubTitle === editTitle);
+    if (idx !== -1) {
+      clubs[idx].description = clubDesc;
+      clubs[idx].maxMembers  = memberLimit;
+      clubs[idx].background  = selectedBg;
+      saveClubs(clubs);
+    }
+    window.location.href = "club.html?clubTitle=" + encodeURIComponent(editTitle);
+  } else {
+    const managerUsername = sessionUserData.username;
+    const club = createClub({
+      clubTitle: clubName,
+      managerUsername,
+      description: clubDesc,
+      maxMembers: memberLimit,
+      background: selectedBg,
+    });
+    saveClub(club);
 
-  // Add club to manager's clubs list and set managedClub
-  if (!sessionUserData.clubs.includes(clubName)) {
-    sessionUserData.clubs.push(clubName);
+    if (!sessionUserData.clubs.includes(clubName)) {
+      sessionUserData.clubs.push(clubName);
+    }
+    sessionUserData.managedClub = clubName;
+    saveUser(sessionUserData);
+
+    window.location.href = "club.html?clubTitle=" + encodeURIComponent(clubName);
   }
-  sessionUserData.managedClub = clubName;
-  saveUser(sessionUserData);
-
-  window.location.href = "club.html?clubTitle=" + encodeURIComponent(clubName);
 });
 
 // ============================================

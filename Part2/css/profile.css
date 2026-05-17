@@ -195,6 +195,12 @@
     0 20px 50px rgba(0,0,0,0.08);
 }
 
+.stats-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 /* ============================================
    STATS
 ============================================ */
@@ -235,6 +241,35 @@
 
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.create-club-btn {
+  margin-left: auto;
+
+  padding: 0.8rem 1.8rem;
+
+  background: #8b5e3c;
+
+  color: #fff;
+
+  border-radius: 999px;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.04em;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.create-club-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 /* ============================================

@@ -373,6 +373,18 @@
       box-shadow: 0 0 18px rgba(200, 60, 50, 0.22);
     }
 
+    .btn-edit-club {
+      color: rgba(201, 169, 154, 0.95);
+      background: rgba(201, 169, 154, 0.1);
+      border-color: rgba(201, 169, 154, 0.5);
+    }
+
+    .btn-edit-club:hover {
+      background: rgba(201, 169, 154, 0.2);
+      border-color: rgba(201, 169, 154, 0.8);
+      box-shadow: 0 0 18px rgba(201, 169, 154, 0.25);
+    }
+
     .delete-confirm-modal {
       text-align: center;
     }
@@ -484,14 +496,101 @@
       color: var(--ink);
     }
 
-    .announcements-history {
-      display: none;
-      flex-direction: column;
-      gap: 0.8rem;
+    .btn-add-announcement {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 50%;
+      border: none;
+      background: #8b5e3c;
+      color: #fff;
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+
+    .btn-add-announcement:hover {
+      opacity: 0.85;
+      transform: scale(1.08);
+    }
+
+    .announcement-compose {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .announcement-compose.open {
+      max-height: 260px;
+    }
+
+    .announcement-textarea {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--ink);
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(201,169,154,0.45);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      resize: none;
+      height: 110px;
+      outline: none;
+      margin-bottom: 0.6rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
       margin-top: 1rem;
     }
 
-    .announcements-history.open { display: flex; }
+    .announcement-textarea:focus {
+      border-color: var(--dusty-rose);
+      box-shadow: 0 0 0 3px rgba(201,169,154,0.18);
+    }
+
+    .compose-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .compose-char-count {
+      font-size: 0.75rem;
+      color: var(--ink-light);
+    }
+
+    .btn-save-announcement {
+      background: #8b5e3c;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.5rem 1.4rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-save-announcement:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    .announcements-history {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .announcements-history.open {
+      max-height: 1000px;
+      margin-top: 1rem;
+    }
 
     .history-item {
       background: rgba(255,255,255,0.35);
@@ -518,24 +617,29 @@
       line-height: 1.6;
     }
 
-    .btn-text {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      color: var(--dusty-rose);
-      letter-spacing: 0.06em;
-      padding: 0;
+    .history-toggle-wrap {
       display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: opacity 0.2s;
-      text-decoration: underline;
-      text-underline-offset: 3px;
+      justify-content: center;
+      margin-top: 1.2rem;
     }
 
-    .btn-text:hover { opacity: 0.7; }
+    .btn-history-toggle {
+      background: rgba(201,169,154,0.15);
+      border: 1px solid rgba(201,169,154,0.35);
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--dusty-rose);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.3s;
+    }
+
+    .btn-history-toggle:hover { background: rgba(201,169,154,0.28); }
+    .btn-history-toggle.open  { transform: rotate(180deg); }
 
     /* ============================================
        POLL SECTION
@@ -1137,8 +1241,156 @@
     }
 
     @media (max-width: 560px) {
-      .poll-grid { grid-template-columns: 1fr; }
+      .poll-grid { grid-template-columns: 1fr !important; }
       .poll-book-cover { height: 260px; }
+    }
+
+    /* ============================================
+       BOOK SEARCH / CREATE POLL MODAL
+    ============================================ */
+    .book-search-modal {
+      background: var(--warm-white);
+      border-radius: 30px;
+      padding: 2.5rem;
+      max-width: 620px;
+      width: calc(100% - 3rem);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.22);
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+    .modal-overlay.open .book-search-modal { transform: translateY(0); }
+
+    .book-search-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+    .book-search-input {
+      flex: 1;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--ink);
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(201,169,154,0.45);
+      border-radius: 14px;
+      padding: 0.7rem 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .book-search-input:focus {
+      border-color: var(--dusty-rose);
+      box-shadow: 0 0 0 3px rgba(201,169,154,0.18);
+    }
+    .btn-book-search {
+      background: #8b5e3c;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 0.7rem 1.4rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .btn-book-search:hover    { opacity: 0.85; }
+    .btn-book-search:disabled { opacity: 0.5; cursor: default; }
+
+    .book-search-status { font-size: 0.88rem; font-style: italic; padding: 0.4rem 0; display: none; }
+    .book-search-status.loading { color: var(--ink-light); display: block; }
+    .book-search-status.error   { color: #c0392b; display: block; }
+
+    .book-result-card {
+      display: none;
+      gap: 1.2rem;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(201,169,154,0.3);
+      border-radius: 20px;
+      padding: 1.2rem;
+      margin-top: 0.8rem;
+    }
+    .result-cover-img {
+      width: 88px; height: 128px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: rgba(201,169,154,0.2);
+    }
+    .result-cover-placeholder {
+      width: 88px; height: 128px;
+      border-radius: 10px;
+      background: linear-gradient(135deg,rgba(201,169,154,0.3),rgba(168,184,160,0.2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; flex-shrink: 0;
+    }
+    .result-info { flex: 1; min-width: 0; }
+    .result-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem; font-weight: 600;
+      color: var(--ink); margin-bottom: 0.2rem; line-height: 1.3;
+    }
+    .result-author { font-size: 0.88rem; color: var(--dusty-rose); font-style: italic; margin-bottom: 0.6rem; }
+    .result-description {
+      font-size: 0.83rem; color: var(--ink-light); line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+      overflow: hidden; margin-bottom: 0.8rem;
+    }
+    .result-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .btn-result-confirm {
+      background: #8b5e3c; color: #fff; border: none;
+      border-radius: 999px; padding: 0.45rem 1.2rem;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-result-confirm:hover { opacity: 0.85; }
+    .btn-result-again {
+      background: transparent; color: var(--ink-light);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.45rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-result-again:hover { background: rgba(0,0,0,0.05); }
+
+    .poll-choices-section { margin-top: 1.4rem; }
+    .poll-choices-label {
+      font-size: 0.73rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-light); margin-bottom: 0.7rem;
+    }
+    .poll-choices-list { display: flex; flex-direction: column; gap: 0.55rem; }
+    .poll-choice-item {
+      display: flex; align-items: center; gap: 0.8rem;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(201,169,154,0.22);
+      border-radius: 12px; padding: 0.55rem 0.8rem;
+    }
+    .choice-cover {
+      width: 34px; height: 50px; border-radius: 6px;
+      object-fit: cover; flex-shrink: 0; background: rgba(201,169,154,0.2);
+    }
+    .choice-cover-placeholder {
+      width: 34px; height: 50px; border-radius: 6px;
+      background: rgba(201,169,154,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .choice-info { flex: 1; min-width: 0; }
+    .choice-title {
+      font-family: var(--font-display); font-size: 0.9rem; font-weight: 600;
+      color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .choice-author { font-size: 0.76rem; color: var(--ink-light); font-style: italic; }
+    .btn-choice-remove {
+      background: none; border: none; color: var(--ink-light);
+      cursor: pointer; font-size: 0.9rem; padding: 0.2rem 0.4rem;
+      border-radius: 50%; transition: background 0.2s, color 0.2s; flex-shrink: 0;
+    }
+    .btn-choice-remove:hover { background: rgba(0,0,0,0.07); color: var(--ink); }
+
+    .poll-modal-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--border);
     }
   </style>
 </head>
@@ -1168,10 +1420,13 @@
     <!-- Club info below video -->
     <div class="hero-video-content">
       <div class="hero-video-inner">
-        <span class="club-tag">Fantasy Club</span>
+        <span class="club-tag" id="manager-badge">Manager</span>
         <div class="club-title-row">
           <h1 class="club-title">Fantasy Lovers</h1>
-          <button class="btn-join-club" id="join-club-btn" style="display:none;">Join Club ✦</button>
+          <div style="display:flex; gap:0.6rem; align-items:center;">
+            <button class="btn-join-club" id="join-club-btn" style="display:none;">Join Club ✦</button>
+            <button class="btn-join-club btn-edit-club" id="edit-club-btn" style="display:none;">✏ Edit Club</button>
+          </div>
         </div>
         <p class="club-description">
           A cozy reading club for fantasy lovers,
@@ -1189,7 +1444,7 @@
     <section class="glass-section">
       <div class="section-header">
         <h2 class="section-title">Announcements</h2>
-        <span class="manager-badge">Manager</span>
+        <button class="btn-add-announcement" id="add-announcement-btn" style="display:none;" title="Post announcement">+</button>
       </div>
 
       <div class="announcement-banner" id="latest-announcement">
@@ -1202,41 +1457,22 @@
         </p>
       </div>
 
-      <div style="display:flex; justify-content:flex-end;">
-        <button class="btn-text" id="toggle-history-btn" onclick="toggleHistory()">
-          <span id="history-btn-label">See previous announcements</span>
-          <span id="history-arrow">↓</span>
-        </button>
+      <!-- Compose area (manager only) -->
+      <div class="announcement-compose" id="announcement-compose">
+        <textarea class="announcement-textarea" id="announcement-textarea" placeholder="Write your announcement…" maxlength="500"></textarea>
+        <div class="compose-actions">
+          <span class="compose-char-count" id="compose-char-count">0 / 500</span>
+          <button class="btn-save-announcement" id="save-announcement-btn">Save ✦</button>
+        </div>
       </div>
 
-      <div class="announcements-history" id="announcements-history">
-        <div class="history-item">
-          <div class="history-item-meta">
-            <span class="announcement-from" style="font-size:0.7rem;">Vanessa</span>
-            <span class="history-item-date">April 28, 2025</span>
-          </div>
-          <p class="history-item-text">
-            Just voted — please cast your poll votes before Friday so I can order the books in time! 📚
-          </p>
-        </div>
-        <div class="history-item">
-          <div class="history-item-meta">
-            <span class="announcement-from" style="font-size:0.7rem;">Vanessa</span>
-            <span class="history-item-date">April 14, 2025</span>
-          </div>
-          <p class="history-item-text">
-            Exciting news — we hit 12 meetings! 🎉 Thinking of doing something special for our next milestone. Any ideas? Drop them in the WhatsApp group.
-          </p>
-        </div>
-        <div class="history-item">
-          <div class="history-item-meta">
-            <span class="announcement-from" style="font-size:0.7rem;">Vanessa</span>
-            <span class="history-item-date">March 20, 2025</span>
-          </div>
-          <p class="history-item-text">
-            Happy Purim! 🎭 Planning a festive in-person meeting this month. Looking at a café in Tel Aviv. Stay tuned!
-          </p>
-        </div>
+      <!-- History -->
+      <div class="announcements-history" id="announcements-history"></div>
+
+      <div class="history-toggle-wrap" id="history-toggle-wrap" style="display:none;">
+        <button class="btn-history-toggle" id="toggle-history-btn" onclick="toggleHistory()">
+          <span id="history-arrow">&#8964;</span>
+        </button>
       </div>
     </section>
 
@@ -1281,6 +1517,7 @@
     <section class="glass-section">
       <div class="section-header">
         <h2 class="section-title">Vote — Next Read</h2>
+        <button class="btn-add-announcement" id="add-poll-btn" style="display:none;" title="Create new poll">+</button>
       </div>
       <p class="poll-subtitle">Choose up to 2 books you'd like the club to read next. Hover over a cover to read the summary.</p>
 
@@ -1693,6 +1930,35 @@
     </div>
   </div>
 
+  <!-- BOOK SEARCH / CREATE POLL MODAL -->
+  <div class="modal-overlay" id="book-search-overlay">
+    <div class="book-search-modal">
+      <button class="modal-close" id="book-search-close">✕</button>
+      <h2 class="section-title" style="margin-bottom:1.4rem;">Create Poll</h2>
+
+      <div class="book-search-row">
+        <input type="text" class="book-search-input" id="book-search-input"
+          placeholder="Search by book title…" maxlength="120">
+        <button class="btn-book-search" id="book-search-btn">Search</button>
+      </div>
+
+      <div class="book-search-status" id="book-search-status"></div>
+      <div class="book-result-card" id="book-result-card"></div>
+
+      <div class="poll-choices-section" id="poll-choices-section" style="display:none;">
+        <div class="poll-choices-label">Choices added — <span id="choices-count">0</span> / 4</div>
+        <div class="poll-choices-list" id="poll-choices-list"></div>
+      </div>
+
+      <div class="poll-modal-footer">
+        <button class="btn-secondary" id="poll-modal-cancel">Cancel</button>
+        <button class="btn-save-announcement" id="poll-modal-save"
+          style="display:none; background:#8b5e3c;">Save Poll ✦</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/books.js"></script>
   <script src="js/club.js"></script>
   <script>
     // ============================================
@@ -1713,6 +1979,7 @@
       if (!rawTitle) { window.location.href = "profile.html"; return; }
       const club = getClubByTitle(decodeURIComponent(rawTitle));
       if (!club) { window.location.href = "profile.html"; return; }
+      window.CLUB = club;  // expose for poll rendering
 
       document.title = "Bookies — " + club.clubTitle;
 
@@ -1730,12 +1997,8 @@
       document.querySelector(".club-title").textContent = club.clubTitle;
       document.querySelector(".club-description").textContent = club.description || "";
 
-      // Announcements — empty state for new clubs
-      if (!club.announcements || club.announcements.length === 0) {
-        document.getElementById("latest-announcement").innerHTML =
-          '<p class="announcement-text" style="color:var(--ink-light);font-style:italic;">No announcements yet.</p>';
-        document.getElementById("toggle-history-btn").style.display = "none";
-      }
+      // Announcements
+      renderAnnouncements(club);
 
       // Meetings — empty state for new clubs
       if (!club.meetings || club.meetings.length === 0) {
@@ -1784,6 +2047,12 @@
         const isMember  = club.members.includes(currentUser.username);
         const isManager = currentUser.username === club.managerUsername;
 
+        // Manager badge
+        if (!isManager && managerData) {
+          const badge = document.getElementById("manager-badge");
+          badge.textContent = "Managed By: " + managerData.nickname;
+        }
+
         if (!isMember) {
           joinBtn.style.display = "inline-block";
           joinBtn.addEventListener("click", function () {
@@ -1809,6 +2078,51 @@
           joinBtn.innerHTML = "🗑 Delete Club";
           joinBtn.classList.add("btn-delete-club");
           joinBtn.style.display = "inline-block";
+
+          const editBtn = document.getElementById("edit-club-btn");
+          editBtn.style.display = "inline-block";
+          editBtn.addEventListener("click", function () {
+            window.location.href = "create-club.html?edit=" + encodeURIComponent(club.clubTitle);
+          });
+
+          // Manager: announcement compose
+          const addAnnouncementBtn = document.getElementById("add-announcement-btn");
+          addAnnouncementBtn.style.display = "flex";
+
+          document.getElementById("add-poll-btn").style.display = "flex";
+
+          const compose      = document.getElementById("announcement-compose");
+          const textarea     = document.getElementById("announcement-textarea");
+          const charCount    = document.getElementById("compose-char-count");
+          const saveAnnoBtn  = document.getElementById("save-announcement-btn");
+          let composeOpen    = false;
+
+          addAnnouncementBtn.addEventListener("click", function () {
+            composeOpen = !composeOpen;
+            compose.classList.toggle("open", composeOpen);
+            addAnnouncementBtn.textContent = composeOpen ? "×" : "+";
+            if (composeOpen) textarea.focus();
+          });
+
+          textarea.addEventListener("input", function () {
+            charCount.textContent = textarea.value.length + " / 500";
+          });
+
+          saveAnnoBtn.addEventListener("click", function () {
+            const text = textarea.value.trim();
+            if (!text) return;
+            const now = new Date();
+            const dateStr = now.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+            const ann = { text, date: dateStr, from: currentUser.nickname };
+            club.announcements = [ann, ...(club.announcements || [])];
+            saveClub(club);
+            textarea.value = "";
+            charCount.textContent = "0 / 500";
+            composeOpen = false;
+            compose.classList.remove("open");
+            addAnnouncementBtn.textContent = "+";
+            renderAnnouncements(club);
+          });
           document.getElementById("delete-club-name").textContent = '"' + club.clubTitle + '"';
           const deleteOverlay = document.getElementById("delete-confirm-overlay");
           joinBtn.addEventListener("click", () => deleteOverlay.classList.add("open"));
@@ -1947,10 +2261,109 @@
     const pollSelected = new Set();
     let pollSubmitted = false;
 
+    // Prevents XSS when inserting API-sourced text into innerHTML
+    function escapeHtml(str) {
+      return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // Renders the active poll (last entry in club.polls) into #poll-grid.
+    // Grid layout adapts: 1–3 books → single row, 4 books → 2×2.
+    function renderPoll(club) {
+      const polls     = club.polls || [];
+      const active    = polls.length > 0 ? polls[polls.length - 1] : null;
+      const grid      = document.getElementById("poll-grid");
+      const subtitle  = document.querySelector(".poll-subtitle");
+      const hint      = document.getElementById("poll-hint");
+      const actionRow = document.getElementById("poll-action-row");
+
+      pollSelected.clear();
+      pollSubmitted = false;
+
+      if (!active || !active.books || active.books.length === 0) {
+        grid.innerHTML = '<p style="color:var(--ink-light);font-style:italic;padding:1.5rem 0;text-align:center;">No poll active yet.</p>';
+        if (subtitle) subtitle.style.display = "none";
+        hint.style.display      = "none";
+        actionRow.style.display = "none";
+        return;
+      }
+
+      if (subtitle) subtitle.style.display = "";
+
+      const books = active.books;
+      const count = books.length;
+
+      // Inline style overrides the CSS default of repeat(2, 1fr)
+      if (count === 1) {
+        grid.style.gridTemplateColumns = "minmax(0, 420px)";
+        grid.style.justifyContent      = "center";
+      } else if (count <= 3) {
+        grid.style.gridTemplateColumns = `repeat(${count}, 1fr)`;
+        grid.style.justifyContent      = "";
+      } else {
+        grid.style.gridTemplateColumns = "repeat(2, 1fr)";
+        grid.style.justifyContent      = "";
+      }
+
+      const currentUser = getCurrentUser();
+      const userVoted   = currentUser && books.some(b => (b.votedBy || []).includes(currentUser.username));
+      if (userVoted) pollSubmitted = true;
+
+      const totalVotes = books.reduce((sum, b) => sum + (b.voteCount || 0), 0);
+
+      grid.innerHTML = books.map((b, i) => {
+        const pct      = totalVotes > 0 ? Math.round((b.voteCount || 0) / totalVotes * 100) : 0;
+        const voteWord = (b.voteCount || 0) === 1 ? "vote" : "votes";
+
+        // Real cover with an emoji fallback if the image fails to load
+        const coverHtml = b.cover
+          ? `<img class="poll-cover-img" src="${escapeHtml(b.cover)}" alt=""
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+             <span class="poll-cover-symbol" style="display:none;">📖</span>`
+          : `<span class="poll-cover-symbol">📖</span>`;
+
+        // Vote bars only appear after the current user has voted
+        const voteBarHtml = userVoted
+          ? `<div class="poll-votes-bar" style="display:block;">
+               <div class="poll-votes-fill" style="width:${pct}%"></div>
+             </div>
+             <div class="poll-votes-count" style="display:block;">${b.voteCount || 0} ${voteWord}</div>`
+          : "";
+
+        return `
+          <div class="poll-book" data-index="${i}" onclick="togglePollVote(${i})">
+            <div class="poll-book-cover poll-book-cover-${i + 1}">
+              ${coverHtml}
+              <div class="poll-check">✓</div>
+              <div class="poll-hover-overlay">
+                <div class="poll-hover-title">${escapeHtml(b.title)}</div>
+                <div class="poll-hover-author">${escapeHtml(b.author)}</div>
+                <div class="poll-hover-summary">${escapeHtml(b.description)}</div>
+              </div>
+            </div>
+            <div class="poll-book-info">
+              <div class="poll-book-name">${escapeHtml(b.title)}</div>
+              <div class="poll-book-author-small">${escapeHtml(b.author)}</div>
+              ${voteBarHtml}
+            </div>
+          </div>`;
+      }).join("");
+
+      hint.style.display = "";
+      if (userVoted) {
+        hint.textContent = "✦ Your vote has been submitted. Thank you!";
+        hint.classList.add("submitted");
+        actionRow.style.display = "none";
+      } else {
+        hint.textContent = "Select up to 2 options";
+        hint.classList.remove("submitted");
+        actionRow.style.display = "none";
+      }
+    }
+
     function togglePollVote(index) {
       if (pollSubmitted) return;
       const books = document.querySelectorAll(".poll-book");
-      const book = books[index];
+      const book  = books[index];
 
       if (pollSelected.has(index)) {
         pollSelected.delete(index);
@@ -1961,46 +2374,262 @@
         book.classList.add("selected");
       }
 
-      const hint = document.getElementById("poll-hint");
+      const hint      = document.getElementById("poll-hint");
       const actionRow = document.getElementById("poll-action-row");
 
       if (pollSelected.size === 0) {
-        hint.textContent = "Select up to 2 options";
+        hint.textContent        = "Select up to 2 options";
         actionRow.style.display = "none";
       } else if (pollSelected.size === 1) {
-        hint.textContent = "You can select one more option, or submit your vote";
+        hint.textContent        = "You can select one more option, or submit your vote";
         actionRow.style.display = "flex";
       } else {
-        hint.textContent = "You've selected 2 options";
+        hint.textContent        = "You've selected 2 options";
         actionRow.style.display = "flex";
       }
     }
 
+    // Persists the vote to localStorage, then re-renders to show vote bars.
     function submitPollVote() {
       if (pollSelected.size === 0 || pollSubmitted) return;
       pollSubmitted = true;
 
-      // Hide the entire grid
-      document.getElementById("poll-grid").style.display = "none";
+      const rawTitle    = new URLSearchParams(window.location.search).get("clubTitle");
+      const club        = getClubByTitle(decodeURIComponent(rawTitle));
+      if (!club || !club.polls || club.polls.length === 0) return;
 
-      const hint = document.getElementById("poll-hint");
-      hint.textContent = "✦ Your vote has been submitted. Thank you!";
-      hint.classList.add("submitted");
-      document.getElementById("poll-action-row").style.display = "none";
+      const active      = club.polls[club.polls.length - 1];
+      const currentUser = getCurrentUser();
+
+      pollSelected.forEach(function (idx) {
+        if (!active.books[idx]) return;
+        active.books[idx].voteCount = (active.books[idx].voteCount || 0) + 1;
+        if (!active.books[idx].votedBy) active.books[idx].votedBy = [];
+        if (currentUser) active.books[idx].votedBy.push(currentUser.username);
+      });
+
+      saveClub(club);
+      window.CLUB = club;
+      renderPoll(club);
     }
 
     // ============================================
-    // ANNOUNCEMENTS HISTORY
+    // BOOK SEARCH MODAL (manager: create poll)
     // ============================================
+    let pendingBook = null;  // book returned by the last search
+    let pollChoices = [];    // books the manager has confirmed (up to 4)
+
+    function setSearchStatus(msg, type) {  // type: "" | "loading" | "error"
+      const el   = document.getElementById("book-search-status");
+      el.textContent = msg;
+      el.className   = "book-search-status" + (type ? " " + type : "");
+    }
+
+    async function runBookSearch() {
+      const input = document.getElementById("book-search-input");
+      const query = input.value.trim();
+      if (!query) return;
+
+      document.getElementById("book-result-card").style.display = "none";
+      document.getElementById("book-search-btn").disabled = true;
+      setSearchStatus("Searching…", "loading");
+
+      try {
+        const book = await searchBook(query);  // defined in books.js
+        setSearchStatus("", "");
+
+        if (!book) {
+          setSearchStatus("No book found. Try a different title.", "error");
+          return;
+        }
+
+        pendingBook = book;
+
+        const coverHtml = book.cover
+          ? `<img class="result-cover-img" src="${escapeHtml(book.cover)}" alt=""
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+             <div class="result-cover-placeholder" style="display:none;">📖</div>`
+          : `<div class="result-cover-placeholder">📖</div>`;
+
+        const card = document.getElementById("book-result-card");
+        card.innerHTML = `
+          ${coverHtml}
+          <div class="result-info">
+            <div class="result-title">${escapeHtml(book.title)}</div>
+            <div class="result-author">${escapeHtml(book.author)}</div>
+            <div class="result-description">${escapeHtml(book.description)}</div>
+            <div class="result-actions">
+              <button class="btn-result-confirm" onclick="confirmPollBook()">Add to poll</button>
+              <button class="btn-result-again"   onclick="clearBookResult()">Search again</button>
+            </div>
+          </div>`;
+        card.style.display = "flex";
+      } catch (err) {
+        setSearchStatus("Search failed. Please check your connection.", "error");
+      } finally {
+        document.getElementById("book-search-btn").disabled = false;
+      }
+    }
+
+    function clearBookResult() {
+      pendingBook = null;
+      document.getElementById("book-result-card").style.display = "none";
+      setSearchStatus("", "");
+      const input = document.getElementById("book-search-input");
+      input.value = "";
+      input.focus();
+    }
+
+    function confirmPollBook() {
+      if (!pendingBook || pollChoices.length >= 4) return;
+      pollChoices.push(pendingBook);
+      pendingBook = null;
+      document.getElementById("book-result-card").style.display = "none";
+      document.getElementById("book-search-input").value = "";
+      setSearchStatus("", "");
+      renderPollChoices();
+    }
+
+    function removePollChoice(i) {
+      pollChoices.splice(i, 1);
+      renderPollChoices();
+    }
+
+    function renderPollChoices() {
+      const section = document.getElementById("poll-choices-section");
+      const list    = document.getElementById("poll-choices-list");
+      const saveBtn = document.getElementById("poll-modal-save");
+      document.getElementById("choices-count").textContent = pollChoices.length;
+
+      section.style.display = pollChoices.length > 0 ? "block"         : "none";
+      saveBtn.style.display = pollChoices.length > 0 ? "inline-block"  : "none";
+
+      list.innerHTML = pollChoices.map((b, i) => {
+        const coverHtml = b.cover
+          ? `<img class="choice-cover" src="${escapeHtml(b.cover)}" alt=""
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+             <div class="choice-cover-placeholder" style="display:none;">📖</div>`
+          : `<div class="choice-cover-placeholder">📖</div>`;
+        return `
+          <div class="poll-choice-item">
+            ${coverHtml}
+            <div class="choice-info">
+              <div class="choice-title">${escapeHtml(b.title)}</div>
+              <div class="choice-author">${escapeHtml(b.author)}</div>
+            </div>
+            <button class="btn-choice-remove" onclick="removePollChoice(${i})" title="Remove">✕</button>
+          </div>`;
+      }).join("");
+    }
+
+    function savePoll() {
+      if (pollChoices.length === 0) return;
+      const rawTitle    = new URLSearchParams(window.location.search).get("clubTitle");
+      const club        = getClubByTitle(decodeURIComponent(rawTitle));
+      const currentUser = getCurrentUser();
+      if (!club) return;
+
+      const newPoll = {
+        id:        "poll_" + Date.now(),
+        createdAt: new Date().toISOString(),
+        createdBy: currentUser ? currentUser.username : "",
+        books:     pollChoices.map(b => Object.assign({}, b)),  // shallow copy each book
+      };
+
+      if (!club.polls) club.polls = [];
+      club.polls.push(newPoll);
+      saveClub(club);
+      window.CLUB = club;
+
+      closePollModal();
+      renderPoll(club);
+    }
+
+    function openPollModal() {
+      pollChoices = [];
+      pendingBook = null;
+      document.getElementById("book-search-input").value            = "";
+      document.getElementById("book-result-card").style.display     = "none";
+      document.getElementById("poll-choices-section").style.display = "none";
+      document.getElementById("poll-choices-list").innerHTML        = "";
+      document.getElementById("choices-count").textContent          = "0";
+      document.getElementById("poll-modal-save").style.display      = "none";
+      setSearchStatus("", "");
+      document.getElementById("book-search-overlay").classList.add("open");
+      setTimeout(function () { document.getElementById("book-search-input").focus(); }, 50);
+    }
+
+    function closePollModal() {
+      document.getElementById("book-search-overlay").classList.remove("open");
+    }
+
+    (function () {
+      const overlay = document.getElementById("book-search-overlay");
+      document.getElementById("add-poll-btn").addEventListener("click", openPollModal);
+      document.getElementById("book-search-close").addEventListener("click", closePollModal);
+      document.getElementById("poll-modal-cancel").addEventListener("click", closePollModal);
+      document.getElementById("poll-modal-save").addEventListener("click", savePoll);
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) closePollModal(); });
+      document.getElementById("book-search-btn").addEventListener("click", runBookSearch);
+      document.getElementById("book-search-input").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") runBookSearch();
+      });
+    })();
+
+    // Initial render — window.CLUB is set by the page-load IIFE above
+    renderPoll(window.CLUB || { polls: [] });
+
+    // ============================================
+    // ANNOUNCEMENTS
+    // ============================================
+    function renderAnnouncements(club) {
+      const list = club.announcements || [];
+      const latestEl  = document.getElementById("latest-announcement");
+      const historyEl = document.getElementById("announcements-history");
+      const toggleWrap = document.getElementById("history-toggle-wrap");
+
+      if (list.length === 0) {
+        latestEl.innerHTML =
+          '<p class="announcement-text" style="color:var(--ink-light);font-style:italic;">No announcements yet.</p>';
+        toggleWrap.style.display = "none";
+        historyEl.innerHTML = "";
+        return;
+      }
+
+      const latest = list[0];
+      latestEl.innerHTML = `
+        <div class="announcement-meta">
+          <span class="announcement-from">${latest.from} · Club Manager</span>
+          <span class="announcement-date">${latest.date}</span>
+        </div>
+        <p class="announcement-text">${latest.text}</p>`;
+
+      const past = list.slice(1);
+      if (past.length > 0) {
+        historyEl.innerHTML = past.map(a => `
+          <div class="history-item">
+            <div class="history-item-meta">
+              <span class="announcement-from" style="font-size:0.7rem;">${a.from}</span>
+              <span class="history-item-date">${a.date}</span>
+            </div>
+            <p class="history-item-text">${a.text}</p>
+          </div>`).join("");
+        toggleWrap.style.display = "flex";
+      } else {
+        historyEl.innerHTML = "";
+        toggleWrap.style.display = "none";
+        historyEl.classList.remove("open");
+        document.getElementById("toggle-history-btn").classList.remove("open");
+      }
+    }
+
     let historyOpen = false;
     function toggleHistory() {
       historyOpen = !historyOpen;
-      const el = document.getElementById("announcements-history");
-      const label = document.getElementById("history-btn-label");
-      const arrow = document.getElementById("history-arrow");
+      const el  = document.getElementById("announcements-history");
+      const btn = document.getElementById("toggle-history-btn");
       el.classList.toggle("open", historyOpen);
-      label.textContent = historyOpen ? "Hide previous announcements" : "See previous announcements";
-      arrow.textContent = historyOpen ? "↑" : "↓";
+      btn.classList.toggle("open", historyOpen);
     }
 
     // ============================================
