@@ -206,6 +206,12 @@
       box-shadow: 0 0 0 3px rgba(184,80,80,0.1);
     }
 
+    .form-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: rgba(200,190,180,0.25);
+    }
+
     .form-textarea { height: 110px; line-height: 1.65; }
 
     .char-count {
@@ -564,9 +570,9 @@
   <main class="page-main">
 
     <!-- PAGE HEADER -->
-    <p class="page-eyebrow">Start something new</p>
-    <h1 class="page-title">Create a Club</h1>
-    <p class="page-subtitle">Give your reading club a home. Fill in the details below and invite readers who share your taste.</p>
+    <p class="page-eyebrow" id="page-eyebrow">Start something new</p>
+    <h1 class="page-title" id="page-title">Create a Club</h1>
+    <p class="page-subtitle" id="page-subtitle">Give your reading club a home. Fill in the details below and invite readers who share your taste.</p>
 
     <div class="vintage-rule"><span class="vintage-rule-icon">✦</span></div>
 
@@ -583,7 +589,7 @@
         <!-- Club name -->
         <div class="form-group">
           <label class="form-label" for="club-name">Club Name</label>
-          <span class="form-hint">Up to 40 characters. Any letters, numbers or symbols.</span>
+          <span class="form-hint" id="club-name-hint">Up to 40 characters. Any letters, numbers or symbols.</span>
           <input class="form-input" type="text" id="club-name" placeholder="e.g. Fantasy Lovers" maxlength="40" autocomplete="off">
           <div class="char-count" id="club-name-count">0 / 40</div>
           <div class="field-error" id="club-name-error"></div>
@@ -712,8 +718,8 @@
         <!-- ── ACTIONS ── -->
         <div class="form-actions">
           <div class="general-error" id="general-error">Please fix the errors above before continuing.</div>
-          <button type="submit" class="btn-vintage">Create Club ✦</button>
-          <a href="profile.html" class="btn-secondary">Cancel</a>
+          <button type="submit" class="btn-vintage" id="submit-btn">Create Club ✦</button>
+          <a href="profile.html" class="btn-secondary" id="cancel-btn">Cancel</a>
         </div>
 
       </form>

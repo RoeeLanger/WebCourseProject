@@ -61,11 +61,11 @@ const profileSubtitle =
 const clubsCount =
   document.getElementById("clubsCount");
 
-const managedCount =
-  document.getElementById("managedCount");
-
 const meetingsCount =
   document.getElementById("meetingsCount");
+
+const createClubBtn =
+  document.getElementById("createClubBtn");
 
 const clubsGrid =
   document.getElementById("clubsGrid");
@@ -95,9 +95,12 @@ if (currentUser) {
     ...(currentUser.managedClub ? [currentUser.managedClub] : []),
   ])];
 
-  clubsCount.textContent   = allClubNames.length;
-  managedCount.textContent = currentUser.managedClub ? 1 : 0;
+  clubsCount.textContent    = allClubNames.length;
   meetingsCount.textContent = "0";
+
+  if (!currentUser.managedClub) {
+    createClubBtn.style.display = "";
+  }
 
   // CLUBS
 
