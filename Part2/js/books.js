@@ -14,6 +14,41 @@ function createBook({ title, author, cover, description, key }) {
   };
 }
 
+// Returns up to `limit` partial Book objects for `title` (no descriptions — fast).
+// Descriptions are omitted so the caller can lazily fetch only the one the user picks.
+async function searchBooks(title, limit) {
+  limit = limit || 5;
+  const encoded = encodeURIComponent(title.trim());
+  const resp = await fetch(
+    `https://openlibrary.org/search.json?title=${encoded}&limit=${limit}&fields=key,title,author_name,cover_i`
+  );
+  const data = await resp.json();
+  if (!data.docs || data.docs.length === 0) return [];
+  return data.docs.map(function (doc) {
+    return createBook({
+      title:  doc.title,
+      author: doc.author_name ? doc.author_name[0] : "Unknown Author",
+      cover:  doc.cover_i ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg` : null,
+      key:    doc.key,
+    });
+  });
+}
+
+// Fetches the description for a single Works key and returns it as a string.
+async function fetchBookDescription(key) {
+  if (!key) return "";
+  try {
+    const resp = await fetch(`https://openlibrary.org${key}.json`);
+    const work = await resp.json();
+    if (!work.description) return "";
+    return typeof work.description === "string"
+      ? work.description
+      : (work.description.value || "");
+  } catch (_) {
+    return "";
+  }
+}
+
 // Searches Open Library for the best match to `title`.
 // Makes two requests: a Search request (fast) then a Works request (for description).
 // Returns a Book object, or null if nothing was found.

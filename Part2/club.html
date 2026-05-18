@@ -1353,6 +1353,50 @@
     }
     .btn-result-again:hover { background: rgba(0,0,0,0.05); }
 
+    /* Multi-result picker list */
+    .book-results-list {
+      display: none;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-top: 0.8rem;
+    }
+    .book-result-row {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(201,169,154,0.3);
+      border-radius: 14px;
+      padding: 0.7rem 0.9rem;
+    }
+    .book-result-row-cover {
+      width: 44px; height: 64px;
+      border-radius: 6px; object-fit: cover; flex-shrink: 0;
+      background: rgba(201,169,154,0.2);
+    }
+    .book-result-row-cover-placeholder {
+      width: 44px; height: 64px;
+      border-radius: 6px; flex-shrink: 0;
+      background: linear-gradient(135deg,rgba(201,169,154,0.3),rgba(168,184,160,0.2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .book-result-row-info { flex: 1; min-width: 0; }
+    .book-result-row-title {
+      font-family: var(--font-display);
+      font-size: 1rem; font-weight: 600; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .book-result-row-author { font-size: 0.82rem; color: var(--dusty-rose); font-style: italic; }
+    .btn-result-select {
+      background: #8b5e3c; color: #fff; border: none;
+      border-radius: 999px; padding: 0.4rem 1rem;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0; transition: opacity 0.2s;
+    }
+    .btn-result-select:hover    { opacity: 0.85; }
+    .btn-result-select:disabled { opacity: 0.5; cursor: default; }
+
     .poll-choices-section { margin-top: 1.4rem; }
     .poll-choices-label {
       font-size: 0.73rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -1943,7 +1987,8 @@
       </div>
 
       <div class="book-search-status" id="book-search-status"></div>
-      <div class="book-result-card" id="book-result-card"></div>
+      <div class="book-results-list"  id="book-results-list"></div>
+      <div class="book-result-card"   id="book-result-card"></div>
 
       <div class="poll-choices-section" id="poll-choices-section" style="display:none;">
         <div class="poll-choices-label">Choices added — <span id="choices-count">0</span> / 4</div>
@@ -2430,40 +2475,39 @@
       const query = input.value.trim();
       if (!query) return;
 
-      document.getElementById("book-result-card").style.display = "none";
+      document.getElementById("book-results-list").style.display = "none";
+      document.getElementById("book-result-card").style.display  = "none";
       document.getElementById("book-search-btn").disabled = true;
       setSearchStatus("Searching…", "loading");
 
       try {
-        const book = await searchBook(query);  // defined in books.js
+        const books = await searchBooks(query);  // defined in books.js
         setSearchStatus("", "");
 
-        if (!book) {
-          setSearchStatus("No book found. Try a different title.", "error");
+        if (!books.length) {
+          setSearchStatus("No books found. Try a different title.", "error");
           return;
         }
 
-        pendingBook = book;
-
-        const coverHtml = book.cover
-          ? `<img class="result-cover-img" src="${escapeHtml(book.cover)}" alt=""
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-             <div class="result-cover-placeholder" style="display:none;">📖</div>`
-          : `<div class="result-cover-placeholder">📖</div>`;
-
-        const card = document.getElementById("book-result-card");
-        card.innerHTML = `
-          ${coverHtml}
-          <div class="result-info">
-            <div class="result-title">${escapeHtml(book.title)}</div>
-            <div class="result-author">${escapeHtml(book.author)}</div>
-            <div class="result-description">${escapeHtml(book.description)}</div>
-            <div class="result-actions">
-              <button class="btn-result-confirm" onclick="confirmPollBook()">Add to poll</button>
-              <button class="btn-result-again"   onclick="clearBookResult()">Search again</button>
-            </div>
-          </div>`;
-        card.style.display = "flex";
+        const list = document.getElementById("book-results-list");
+        list.innerHTML = books.map(function (book, i) {
+          const coverHtml = book.cover
+            ? `<img class="book-result-row-cover" src="${escapeHtml(book.cover)}" alt=""
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+               <div class="book-result-row-cover-placeholder" style="display:none;">📖</div>`
+            : `<div class="book-result-row-cover-placeholder">📖</div>`;
+          return `
+            <div class="book-result-row">
+              ${coverHtml}
+              <div class="book-result-row-info">
+                <div class="book-result-row-title">${escapeHtml(book.title)}</div>
+                <div class="book-result-row-author">${escapeHtml(book.author)}</div>
+              </div>
+              <button class="btn-result-select" onclick="selectBook(${i})">Select</button>
+            </div>`;
+        }).join("");
+        list._books = books;
+        list.style.display = "flex";
       } catch (err) {
         setSearchStatus("Search failed. Please check your connection.", "error");
       } finally {
@@ -2471,9 +2515,46 @@
       }
     }
 
+    async function selectBook(i) {
+      const list  = document.getElementById("book-results-list");
+      const books = list._books;
+      if (!books || !books[i]) return;
+
+      list.querySelectorAll(".btn-result-select").forEach(function (b) { b.disabled = true; });
+      setSearchStatus("Loading details…", "loading");
+
+      const book = books[i];
+      book.description = await fetchBookDescription(book.key);  // defined in books.js
+
+      list.style.display = "none";
+      setSearchStatus("", "");
+      pendingBook = book;
+
+      const coverHtml = book.cover
+        ? `<img class="result-cover-img" src="${escapeHtml(book.cover)}" alt=""
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="result-cover-placeholder" style="display:none;">📖</div>`
+        : `<div class="result-cover-placeholder">📖</div>`;
+
+      const card = document.getElementById("book-result-card");
+      card.innerHTML = `
+        ${coverHtml}
+        <div class="result-info">
+          <div class="result-title">${escapeHtml(book.title)}</div>
+          <div class="result-author">${escapeHtml(book.author)}</div>
+          <div class="result-description">${escapeHtml(book.description)}</div>
+          <div class="result-actions">
+            <button class="btn-result-confirm" onclick="confirmPollBook()">Add to poll</button>
+            <button class="btn-result-again"   onclick="clearBookResult()">Search again</button>
+          </div>
+        </div>`;
+      card.style.display = "flex";
+    }
+
     function clearBookResult() {
       pendingBook = null;
-      document.getElementById("book-result-card").style.display = "none";
+      document.getElementById("book-results-list").style.display = "none";
+      document.getElementById("book-result-card").style.display  = "none";
       setSearchStatus("", "");
       const input = document.getElementById("book-search-input");
       input.value = "";
@@ -2484,7 +2565,8 @@
       if (!pendingBook || pollChoices.length >= 4) return;
       pollChoices.push(pendingBook);
       pendingBook = null;
-      document.getElementById("book-result-card").style.display = "none";
+      document.getElementById("book-results-list").style.display = "none";
+      document.getElementById("book-result-card").style.display  = "none";
       document.getElementById("book-search-input").value = "";
       setSearchStatus("", "");
       renderPollChoices();
@@ -2549,6 +2631,7 @@
       pollChoices = [];
       pendingBook = null;
       document.getElementById("book-search-input").value            = "";
+      document.getElementById("book-results-list").style.display    = "none";
       document.getElementById("book-result-card").style.display     = "none";
       document.getElementById("poll-choices-section").style.display = "none";
       document.getElementById("poll-choices-list").innerHTML        = "";
