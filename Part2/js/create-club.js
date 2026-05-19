@@ -129,7 +129,24 @@ function initCharCounter(inputId, countId, max) {
 }
 
 initCharCounter("club-name", "club-name-count", 40);
-initCharCounter("club-desc",  "club-desc-count",  200);
+initCharCounter("club-desc",  "club-desc-count",  133);
+
+// ============================================
+// REAL-TIME DUPLICATE NAME CHECK (on blur)
+// ============================================
+document.getElementById("club-name").addEventListener("blur", function () {
+  if (isEditMode) return;
+  const val = this.value.trim();
+  if (!val) return;
+  const exists = getClubs().some(c => c.clubTitle.toLowerCase() === val.toLowerCase());
+  if (exists) {
+    showError("club-name-error", "A club with this name already exists.");
+    setInvalid("club-name", true);
+  } else {
+    clearError("club-name-error");
+    setInvalid("club-name", false);
+  }
+});
 
 // ============================================
 // LIVE PREVIEW

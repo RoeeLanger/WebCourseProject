@@ -125,7 +125,6 @@
     .page-subtitle {
       color: var(--ink-light);
       line-height: 1.75;
-      max-width: 520px;
       margin-bottom: 3rem;
     }
 
@@ -343,13 +342,15 @@
       display: block;
     }
 
-    /* Colour gradient fallbacks for each background option */
-    .bg-preview-1 { background: linear-gradient(160deg, #3d2e26, #5a3e2f, #2e2520); }
-    .bg-preview-2 { background: linear-gradient(160deg, #1a2a3d, #2a4060, #0d1820); }
-    .bg-preview-3 { background: linear-gradient(160deg, #2a3d1a, #406030, #0d1808); }
-    .bg-preview-4 { background: linear-gradient(160deg, #3d1a2a, #602040, #180d18); }
-    .bg-preview-5 { background: linear-gradient(160deg, #3d3020, #605040, #181408); }
-    .bg-preview-6 { background: linear-gradient(160deg, #1a3040, #205060, #080e18); }
+    /* Video fills the bg-option card */
+    .bg-preview {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
 
     .bg-selected-tick {
       position: absolute;
@@ -572,7 +573,7 @@
     <!-- PAGE HEADER -->
     <p class="page-eyebrow" id="page-eyebrow">Start something new</p>
     <h1 class="page-title" id="page-title">Create a Club</h1>
-    <p class="page-subtitle" id="page-subtitle">Give your reading club a home. Fill in the details below and invite readers who share your taste.</p>
+    <p class="page-subtitle" id="page-subtitle">Give your club a home — fill in the details below and invite your fellow readers.</p>
 
     <div class="vintage-rule"><span class="vintage-rule-icon">✦</span></div>
 
@@ -598,9 +599,9 @@
         <!-- Club description -->
         <div class="form-group">
           <label class="form-label" for="club-desc">Description</label>
-          <span class="form-hint">What's this club about? Up to 200 characters.</span>
-          <textarea class="form-textarea" id="club-desc" placeholder="e.g. A cozy club for fantasy lovers, dragons, morally questionable characters and emotional damage." maxlength="200"></textarea>
-          <div class="char-count" id="club-desc-count">0 / 200</div>
+          <span class="form-hint">What's this club about? Up to 133 characters.</span>
+          <textarea class="form-textarea" id="club-desc" placeholder="e.g. A cozy club for fantasy lovers, dragons, morally questionable characters and emotional damage." maxlength="133"></textarea>
+          <div class="char-count" id="club-desc-count">0 / 133</div>
           <div class="field-error" id="club-desc-error"></div>
         </div>
 
@@ -617,46 +618,46 @@
 
           <div class="bg-picker-grid" id="bg-picker-grid">
 
+            <label class="bg-option" data-val="videos/124105-730195435.mp4">
+              <input type="radio" name="bg" value="videos/124105-730195435.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/124105-730195435.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Candlelit Pages</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/126997-737419656_medium.mp4">
+              <input type="radio" name="bg" value="videos/126997-737419656_medium.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/126997-737419656_medium.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Rainy Afternoon</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/136081-764371377_medium.mp4">
+              <input type="radio" name="bg" value="videos/136081-764371377_medium.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/136081-764371377_medium.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Morning Tea</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/188710-883612324.mp4">
+              <input type="radio" name="bg" value="videos/188710-883612324.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/188710-883612324.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Scholar's Study</div>
+            </label>
+
             <label class="bg-option" data-val="videos/288559_tiny.mp4">
               <input type="radio" name="bg" value="videos/288559_tiny.mp4">
-              <div class="bg-preview bg-preview-1"></div>
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/288559_tiny.mp4" type="video/mp4"></video>
               <div class="bg-selected-tick">✓</div>
-              <div class="bg-label">Forest Dawn</div>
+              <div class="bg-label">Library Hearth</div>
             </label>
 
-            <label class="bg-option" data-val="videos/bg_ocean.mp4">
-              <input type="radio" name="bg" value="videos/bg_ocean.mp4">
-              <div class="bg-preview bg-preview-2"></div>
+            <label class="bg-option" data-val="videos/Fireplace_Background.mp4">
+              <input type="radio" name="bg" value="videos/Fireplace_Background.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/Fireplace_Background.mp4" type="video/mp4"></video>
               <div class="bg-selected-tick">✓</div>
-              <div class="bg-label">Ocean Dusk</div>
-            </label>
-
-            <label class="bg-option" data-val="videos/bg_meadow.mp4">
-              <input type="radio" name="bg" value="videos/bg_meadow.mp4">
-              <div class="bg-preview bg-preview-3"></div>
-              <div class="bg-selected-tick">✓</div>
-              <div class="bg-label">Summer Meadow</div>
-            </label>
-
-            <label class="bg-option" data-val="videos/bg_night.mp4">
-              <input type="radio" name="bg" value="videos/bg_night.mp4">
-              <div class="bg-preview bg-preview-4"></div>
-              <div class="bg-selected-tick">✓</div>
-              <div class="bg-label">Night Sky</div>
-            </label>
-
-            <label class="bg-option" data-val="videos/bg_autumn.mp4">
-              <input type="radio" name="bg" value="videos/bg_autumn.mp4">
-              <div class="bg-preview bg-preview-5"></div>
-              <div class="bg-selected-tick">✓</div>
-              <div class="bg-label">Autumn Leaves</div>
-            </label>
-
-            <label class="bg-option" data-val="videos/bg_rain.mp4">
-              <input type="radio" name="bg" value="videos/bg_rain.mp4">
-              <div class="bg-preview bg-preview-6"></div>
-              <div class="bg-selected-tick">✓</div>
-              <div class="bg-label">Rainy Evening</div>
+              <div class="bg-label">Rainy Village</div>
             </label>
 
           </div>
