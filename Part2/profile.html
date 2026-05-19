@@ -15,36 +15,43 @@
 <body class="profile-page">
 
   <!-- ===== HEADER ===== -->
-  <header class="landing-header login-header">
-
-    <a class="site-logo">
+<header class="landing-header login-header">    <a class="site-logo">
       Bookies
     </a>
 
-    <div class="header-search">
+    <div class="header-search" style="flex:1;min-width:0;max-width:600px;">
       <input
         type="text"
         id="clubSearch"
         class="search-input"
         placeholder="Search clubs..."
         autocomplete="off"
+        style="width:100%;"
       >
       <ul class="search-dropdown" id="searchDropdown" hidden></ul>
     </div>
 
-    <nav class="header-nav">
+    <nav class="header-nav" style="flex-wrap:nowrap;">
+      <div class="nav-clubs-wrap" style="position:relative;">
+<a class="nav-link-vintage" id="my-clubs-btn" style="white-space:nowrap;cursor:pointer;">My Clubs ▾</a>          <ul class="nav-clubs-dropdown" id="nav-clubs-dropdown" style="
+          display:none;
+          position:absolute;
+          top:calc(100% + 0.4rem);
+          right:0;
+          background:rgba(245,240,232,0.97);
+          backdrop-filter:blur(12px);
+          border:1px solid rgba(120,90,70,0.15);
+          border-radius:12px;
+          padding:0.4rem;
+          min-width:200px;
+          box-shadow:0 12px 32px rgba(0,0,0,0.12);
+          list-style:none;
+          z-index:200;
+        "></ul>
+      </div>
 
-      <a href="#" class="nav-link-vintage">
-        My Clubs
-      </a>
-
-      <a href="calendar.html" class="nav-link-vintage">
-        Calendar
-      </a>
-
-      <a href="#" class="nav-link-vintage" id="logout-btn">
-        Logout
-      </a>
+      <a href="calendar.html" class="nav-link-vintage">Calendar</a>
+      <a href="#" class="nav-link-vintage" id="logout-btn">Logout</a>
 
     </nav>
 
@@ -110,7 +117,7 @@
           </span>
 
           <span class="stat-label">
-            Meetings
+            Upcoming Meetings
           </span>
 
         </div>
@@ -175,6 +182,42 @@
 
     });
 
+
+    // MY CLUBS DROPDOWN
+    (function () {
+      const btn      = document.getElementById("my-clubs-btn");
+      const dropdown = document.getElementById("nav-clubs-dropdown");
+
+      function buildDropdown() {
+        const user = getCurrentUser();
+        dropdown.innerHTML = "";
+        const clubs = user ? (user.clubs || []) : [];
+
+        if (clubs.length === 0) {
+          dropdown.innerHTML = `<li style="padding:0.6rem 1rem;font-size:0.85rem;color:var(--ink-light);font-style:italic;">No clubs yet</li>`;
+        } else {
+          clubs.forEach(function (clubTitle) {
+            const li = document.createElement("li");
+            li.innerHTML = `<a href="club.html?clubTitle=${encodeURIComponent(clubTitle)}"
+              style="display:block;padding:0.6rem 1rem;font-size:0.88rem;color:var(--ink);text-decoration:none;border-radius:8px;transition:background 0.2s;"
+              onmouseover="this.style.background='rgba(201,169,154,0.18)'"
+              onmouseout="this.style.background=''"
+            >${clubTitle}</a>`;
+            dropdown.appendChild(li);
+          });
+        }
+      }
+
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        buildDropdown();
+        dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+      });
+
+      document.addEventListener("click", function () {
+        dropdown.style.display = "none";
+      });
+    })();
   </script>
 
 </body>

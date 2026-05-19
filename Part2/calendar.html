@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bookies — My Schedule</title>
+  <title>Bookies - My Schedule</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital@0;1&display=swap">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/profile.css">
 
   <style>
     /* ============================================
@@ -27,7 +29,7 @@
       --font-display: 'Playfair Display', Georgia, serif;
       --font-body:    'Lora', 'Times New Roman', serif;
 
-      /* Club colour palette — each club gets a hue */
+      /* Club colour palette - each club gets a hue */
       --club-0-bg:    rgba(201, 169, 154, 0.18);
       --club-0-dot:   #c9a99a;
       --club-0-text:  #8b5e3c;
@@ -334,7 +336,7 @@
     }
     .cal-event-pill:hover { filter: brightness(0.88); transform: translateY(-1px); }
 
-    /* Global floating tooltip — positioned by JS, appended to body */
+    /* Global floating tooltip - positioned by JS, appended to body */
     #pill-tooltip-global {
       position: fixed;
       background: var(--ink);
@@ -528,7 +530,7 @@
     }
 
     /* ============================================
-       MODAL — event detail (calendar click)
+       MODAL - event detail (calendar click)
     ============================================ */
     .modal-overlay {
       position: fixed; inset: 0;
@@ -632,14 +634,45 @@
 <body>
 
   <!-- HEADER -->
-  <header class="landing-header">
-    <a href="profile.html" class="site-logo">Bookies</a>
-    <nav class="header-nav">
-      <a href="profile.html" class="nav-link-vintage">Dashboard</a>
-      <a href="calendar.html" class="nav-link-vintage active">Calendar</a>
-      <button class="nav-link-vintage" id="logout-btn">Logout</button>
-    </nav>
-  </header>
+  <header class="landing-header login-header">
+  <a class="site-logo">Bookies</a>
+
+  <div class="header-search" style="flex:1;min-width:0;max-width:600px;">
+    <input
+      type="text"
+      id="clubSearch"
+      class="search-input"
+      placeholder="Search clubs..."
+      autocomplete="off"
+      style="width:100%;"
+    >
+    <ul class="search-dropdown" id="searchDropdown" hidden></ul>
+  </div>
+
+  <nav class="header-nav" style="flex-wrap:nowrap;">
+    <div class="nav-clubs-wrap" style="position:relative;">
+      <a class="nav-link-vintage" id="my-clubs-btn" style="white-space:nowrap;cursor:pointer;">My Clubs ▾</a>
+      <ul class="nav-clubs-dropdown" id="nav-clubs-dropdown" style="
+        display:none;
+        position:absolute;
+        top:calc(100% + 0.4rem);
+        right:0;
+        background:rgba(245,240,232,0.97);
+        backdrop-filter:blur(12px);
+        border:1px solid rgba(120,90,70,0.15);
+        border-radius:12px;
+        padding:0.4rem;
+        min-width:200px;
+        box-shadow:0 12px 32px rgba(0,0,0,0.12);
+        list-style:none;
+        z-index:200;
+      "></ul>
+    </div>
+
+    <a href="profile.html" class="nav-link-vintage">My Profile</a>
+    <a href="#" class="nav-link-vintage" id="logout-btn">Logout</a>
+  </nav>
+</header>
 
   <!-- MAIN -->
   <main class="calendar-main">
@@ -719,7 +752,7 @@
   <script src="js/club.js"></script>
   <script>
     // ============================================
-    // COLOUR MAP — up to 5 clubs get distinct hues
+    // COLOUR MAP - up to 5 clubs get distinct hues
     // ============================================
     const CLUB_COLOURS = [
       { bg: 'rgba(201,169,154,0.20)', dot: '#c9a99a', text: '#8b5e3c', accent: '#c9a99a' },
@@ -730,7 +763,7 @@
     ];
 
     // ============================================
-    // DATA — load from localStorage
+    // DATA - load from localStorage
     // ============================================
     function loadMeetings() {
       const currentUser = getCurrentUser();
@@ -1106,6 +1139,43 @@
     function hidePillTooltip() {
       _ttTimer = setTimeout(() => _tt.classList.remove('visible'), 80);
     }
+
+
+    // MY CLUBS DROPDOWN
+(function () {
+  const btn      = document.getElementById("my-clubs-btn");
+  const dropdown = document.getElementById("nav-clubs-dropdown");
+
+  function buildDropdown() {
+    const user = getCurrentUser();
+    dropdown.innerHTML = "";
+    const clubs = user ? (user.clubs || []) : [];
+
+    if (clubs.length === 0) {
+      dropdown.innerHTML = `<li style="padding:0.6rem 1rem;font-size:0.85rem;color:var(--ink-light);font-style:italic;">No clubs yet</li>`;
+    } else {
+      clubs.forEach(function (clubTitle) {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="club.html?clubTitle=${encodeURIComponent(clubTitle)}"
+          style="display:block;padding:0.6rem 1rem;font-size:0.88rem;color:var(--ink);text-decoration:none;border-radius:8px;transition:background 0.2s;"
+          onmouseover="this.style.background='rgba(201,169,154,0.18)'"
+          onmouseout="this.style.background=''"
+        >${clubTitle}</a>`;
+        dropdown.appendChild(li);
+      });
+    }
+  }
+
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    buildDropdown();
+    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+  });
+
+  document.addEventListener("click", function () {
+    dropdown.style.display = "none";
+  });
+})();
 
     // ============================================
     // BOOT
