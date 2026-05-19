@@ -155,26 +155,18 @@
 
 </div>
 
-      
-
-
   </section>
 
   <!-- ===== BOOK ANIMATION ===== -->
 <section class="book-animation-section">
 
-  <div class="magic-book">
-
-    <div class="book-base"></div>
-
-    <div class="page page-left"></div>
-    <div class="page page-right"></div>
-
-    <span class="spark spark-1">✦</span>
-    <span class="spark spark-2">✦</span>
-    <span class="spark spark-3">✦</span>
-
-  </div>
+<dotlottie-player
+  id="bookAnimation"
+  src="animations/Books.lottie"
+  background="transparent"
+  speed="0.6"
+  autoplay>
+</dotlottie-player>
 
 </section>
 
@@ -199,6 +191,28 @@
     </p>
 
   </footer>
+
+<script
+  type="module"
+  src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs">
+</script>
+
+<script>
+
+const player = document.getElementById("bookAnimation");
+
+player.addEventListener("complete", () => {
+
+  setTimeout(() => {
+    player.seek(0);
+    player.play();
+  }, 1250);
+
+});
+
+</script>
+
+
 
 </body>
 

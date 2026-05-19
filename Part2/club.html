@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bookies — Fantasy Lovers</title>
+  <title>Bookies - Fantasy Lovers</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital@0;1&display=swap">
@@ -100,7 +100,7 @@
     }
 
     /* ============================================
-       HERO — VIDEO STRIP + CONTENT BELOW
+       HERO - VIDEO STRIP + CONTENT BELOW
     ============================================ */
     .club-hero-video {
       width: 100%;
@@ -142,11 +142,14 @@
     .hero-video-content {
       background: linear-gradient(180deg, #2a1e16 0%, #362820 100%);
       padding: 2.5rem 1.5rem 3rem;
+      overflow: hidden;
     }
 
     .hero-video-inner {
       max-width: 1200px;
       margin: 0 auto;
+      overflow: hidden;
+      min-width: 0;
     }
 
     .club-tag {
@@ -168,11 +171,15 @@
     }
 
     .club-description {
-      max-width: 560px;
+      max-width: 100%;
+      width: 100%;
       line-height: 1.9;
       color: rgba(250,247,242,0.6);
       font-size: 1rem;
       margin-bottom: 2rem;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      overflow: hidden;
     }
 
     .club-meta { display: flex; gap: 0.9rem; flex-wrap: wrap; }
@@ -481,7 +488,6 @@
     .announcement-from {
       font-size: 0.72rem;
       letter-spacing: 0.14em;
-      text-transform: uppercase;
       color: var(--dusty-rose);
     }
 
@@ -1118,7 +1124,7 @@
     }
 
     /* ============================================
-       BOOKS READ — HORIZONTAL SCROLL
+       BOOKS READ - HORIZONTAL SCROLL
     ============================================ */
     .books-read-scroll-wrap {
       position: relative;
@@ -1243,7 +1249,7 @@
 
     .scroll-btn:hover { background: var(--ink); color: #fff; }
 
-    /* Star rating — Fourth Wing */
+    /* Star rating - Fourth Wing */
     .star-rating {
       display: flex;
       gap: 3px;
@@ -1556,41 +1562,81 @@
   <header class="landing-header">
     <a href="profile.html" class="site-logo">Bookies</a>
     <nav class="header-nav">
-      <a href="profile.html" class="nav-link-vintage">Dashboard</a>
-      <a href="#" class="nav-link-vintage">Calendar</a>
+      <a href="profile.html" class="nav-link-vintage">My Profile</a>
+      <a href="calendar.html" class="nav-link-vintage">Calendar</a>
       <button class="nav-link-vintage" id="logout-btn">Logout</button>
     </nav>
   </header>
 
-  <!-- HERO — full-bleed video background (outside main, full width) -->
-  <section class="club-hero-video">
-    <!-- Video strip -->
-    <div class="hero-video-wrapper">
-      <div class="hero-video-fallback"></div>
-      <video autoplay muted loop playsinline class="hero-video-bg">
-        <source src="videos/288559_tiny.mp4" type="video/mp4">
-      </video>
-      <div class="hero-video-overlay"></div>
-    </div>
-    <!-- Club info below video -->
-    <div class="hero-video-content">
-      <div class="hero-video-inner">
-        <span class="club-tag" id="manager-badge">Manager</span>
+
+  <!-- HERO - full-bleed video background (outside main, full width) -->
+<section class="club-hero-video">
+
+  <!-- Video strip -->
+  <div class="hero-video-wrapper">
+
+    <div class="hero-video-fallback"></div>
+
+    <video autoplay muted loop playsinline class="hero-video-bg">
+      <source src="videos/288559_tiny.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-video-overlay"></div>
+
+  </div>
+
+  <!-- Club info below video -->
+  <div class="hero-video-content">
+
+    <div class="hero-video-inner">
+
+      <div class="club-hero-content">
+
+        <span class="club-tag" id="manager-badge">
+          Manager
+        </span>
+
         <div class="club-title-row">
-          <h1 class="club-title">Fantasy Lovers</h1>
+
+          <h1 class="club-title">
+            Fantasy Lovers
+          </h1>
+
           <div style="display:flex; gap:0.6rem; align-items:center;">
-            <button class="btn-join-club" id="join-club-btn" style="display:none;">Join Club ✦</button>
-            <button class="btn-join-club btn-edit-club" id="edit-club-btn" style="display:none;">✏ Edit Club</button>
+
+            <button
+              class="btn-join-club"
+              id="join-club-btn"
+              style="display:none;"
+            >
+              Join Club ✦
+            </button>
+
+            <button
+              class="btn-join-club btn-edit-club"
+              id="edit-club-btn"
+              style="display:none;"
+            >
+              ✏ Edit Club
+            </button>
+
           </div>
+
         </div>
+
         <p class="club-description">
           A cozy reading club for fantasy lovers,
           dragons, morally questionable characters
           and emotional damage.
         </p>
+
       </div>
+
     </div>
-  </section>
+
+  </div>
+
+</section>
 
   <!-- MAIN -->
   <main class="club-main">
@@ -1608,7 +1654,7 @@
           <span class="announcement-date">May 12, 2025</span>
         </div>
         <p class="announcement-text" id="announcement-text">
-          Hey everyone! 🌸 In light of Lag B'Omer next week, our meeting will be moving from Thursday to <strong>Sunday, May 18th at 20:00</strong>. Same Zoom link as always. Come ready with thoughts on chapters 1–10 — I've already finished them and there's a lot to unpack. See you all there!
+          Hey everyone! 🌸 In light of Lag B'Omer next week, our meeting will be moving from Thursday to <strong>Sunday, May 18th at 20:00</strong>. Same Zoom link as always. Come ready with thoughts on chapters 1–10 - I've already finished them and there's a lot to unpack. See you all there!
         </p>
       </div>
 
@@ -1642,7 +1688,7 @@
     <!-- POLL -->
     <section class="glass-section">
       <div class="section-header">
-        <h2 class="section-title">Vote — Next Read</h2>
+        <h2 class="section-title">Vote - Next Read</h2>
         <div style="display:flex; gap:0.6rem; align-items:center;">
           <button class="btn-end-vote" id="end-vote-btn" onclick="openEndVoteModal()">End the vote!</button>
           <button class="btn-add-announcement" id="add-poll-btn" style="display:none;" title="Create new poll">+</button>
@@ -1682,13 +1728,13 @@
             <div class="poll-hover-overlay">
               <div class="poll-hover-title">A Court of Thorns and Roses</div>
               <div class="poll-hover-author">Sarah J. Maas</div>
-              <div class="poll-hover-summary">A young huntress is dragged into the treacherous world of the Fae after killing a wolf in the woods. In a land of beauty, magic, and danger, she discovers a love she never expected — and a curse that could destroy everything.</div>
+              <div class="poll-hover-summary">A young huntress is dragged into the treacherous world of the Fae after killing a wolf in the woods. In a land of beauty, magic, and danger, she discovers a love she never expected - and a curse that could destroy everything.</div>
             </div>
           </div>
           <div class="poll-book-info">
             <div class="poll-book-name">A Court of Thorns and Roses</div>
             <div class="poll-book-author-small">Sarah J. Maas</div>
-            <div class="poll-book-desc">A young huntress is dragged into the treacherous world of the Fae after killing a wolf in the woods. In a land of beauty, magic, and danger, she discovers a love she never expected — and a curse that could destroy everything.</div>
+            <div class="poll-book-desc">A young huntress is dragged into the treacherous world of the Fae after killing a wolf in the woods. In a land of beauty, magic, and danger, she discovers a love she never expected - and a curse that could destroy everything.</div>
             <div class="poll-votes-bar"><div class="poll-votes-fill" style="width:60%"></div></div>
             <div class="poll-votes-count">3 votes</div>
           </div>
@@ -1723,13 +1769,13 @@
             <div class="poll-hover-overlay">
               <div class="poll-hover-title">The Name of the Wind</div>
               <div class="poll-hover-author">Patrick Rothfuss</div>
-              <div class="poll-hover-summary">The legendary Kvothe narrates his own extraordinary life — from a gifted child in a traveling troupe, to a homeless orphan, to a student of magic at a prestigious University, to a mythical hero. A masterpiece of modern fantasy.</div>
+              <div class="poll-hover-summary">The legendary Kvothe narrates his own extraordinary life - from a gifted child in a traveling troupe, to a homeless orphan, to a student of magic at a prestigious University, to a mythical hero. A masterpiece of modern fantasy.</div>
             </div>
           </div>
           <div class="poll-book-info">
             <div class="poll-book-name">The Name of the Wind</div>
             <div class="poll-book-author-small">Patrick Rothfuss</div>
-            <div class="poll-book-desc">The legendary Kvothe narrates his own extraordinary life — from a gifted child in a traveling troupe, to a homeless orphan, to a student of magic at a prestigious University, to a mythical hero. A masterpiece of modern fantasy.</div>
+            <div class="poll-book-desc">The legendary Kvothe narrates his own extraordinary life - from a gifted child in a traveling troupe, to a homeless orphan, to a student of magic at a prestigious University, to a mythical hero. A masterpiece of modern fantasy.</div>
             <div class="poll-votes-bar"><div class="poll-votes-fill" style="width:40%"></div></div>
             <div class="poll-votes-count">2 votes</div>
           </div>
@@ -1805,13 +1851,13 @@
             <div class="poll-hover-overlay">
               <div class="poll-hover-title">The Lies of Locke Lamora</div>
               <div class="poll-hover-author">Scott Lynch</div>
-              <div class="poll-hover-summary">A gang of brilliant con artists steals from Camorr's corrupt nobility with elaborate schemes — until a mysterious crime lord called the Gray King threatens to destroy everything. Clever, dark, and wickedly entertaining.</div>
+              <div class="poll-hover-summary">A gang of brilliant con artists steals from Camorr's corrupt nobility with elaborate schemes - until a mysterious crime lord called the Gray King threatens to destroy everything. Clever, dark, and wickedly entertaining.</div>
             </div>
           </div>
           <div class="poll-book-info">
             <div class="poll-book-name">The Lies of Locke Lamora</div>
             <div class="poll-book-author-small">Scott Lynch</div>
-            <div class="poll-book-desc">A gang of brilliant con artists steals from Camorr's corrupt nobility with elaborate schemes — until a mysterious crime lord called the Gray King threatens to destroy everything. Clever, dark, and wickedly entertaining.</div>
+            <div class="poll-book-desc">A gang of brilliant con artists steals from Camorr's corrupt nobility with elaborate schemes - until a mysterious crime lord called the Gray King threatens to destroy everything. Clever, dark, and wickedly entertaining.</div>
             <div class="poll-votes-bar"><div class="poll-votes-fill" style="width:0%"></div></div>
             <div class="poll-votes-count">0 votes</div>
           </div>
@@ -1981,7 +2027,7 @@
       <div class="book-result-card"   id="book-result-card"></div>
 
       <div class="poll-choices-section" id="poll-choices-section" style="display:none;">
-        <div class="poll-choices-label">Choices added — <span id="choices-count">0</span> / 4</div>
+        <div class="poll-choices-label">Choices added - <span id="choices-count">0</span> / 4</div>
         <div class="poll-choices-list" id="poll-choices-list"></div>
       </div>
 
@@ -2016,7 +2062,7 @@
       if (!club) { window.location.href = "profile.html"; return; }
       window.CLUB = club;  // expose for poll rendering
 
-      document.title = "Bookies — " + club.clubTitle;
+      document.title = "Bookies - " + club.clubTitle;
 
       // Hero video & fallback gradient
       if (club.background) {
@@ -2363,7 +2409,7 @@
       const poll  = polls.length > 0 ? polls[polls.length - 1] : null;
       if (!poll || !poll.books || poll.books.length === 0) { closeEndVoteModal(); return; }
 
-      // Pick winner — highest voteCount, tie goes to first
+      // Pick winner - highest voteCount, tie goes to first
       const winner = poll.books.reduce((best, b) =>
         (b.voteCount || 0) > (best.voteCount || 0) ? b : best, poll.books[0]);
 
@@ -2414,9 +2460,12 @@
       if (active.ended) {
         const winner = active.books.reduce((best, b) =>
           (b.voteCount || 0) > (best.voteCount || 0) ? b : best, active.books[0]);
-        grid.innerHTML = `<p style="color:var(--ink-light);font-style:italic;padding:1.5rem 0;text-align:center;">
-          This poll has closed. ✦ <strong style="color:var(--ink);">${escapeHtml(winner.title)}</strong> was selected as the next read.
-        </p>`;
+          
+          grid.style.gridTemplateColumns = "1fr"; 
+         
+          grid.innerHTML = `<p style="color:var(--ink-light);font-style:italic;padding:1.5rem 0;">
+          This poll has closed.<br>  <strong style="color:var(--ink);">${escapeHtml(winner.title)}</strong> was selected as the next read.
+          </p>`;
         if (subtitle) subtitle.style.display = "none";
         hint.style.display      = "none";
         actionRow.style.display = "none";
@@ -2766,7 +2815,7 @@
       });
     })();
 
-    // Initial render — window.CLUB is set by the page-load IIFE above
+    // Initial render - window.CLUB is set by the page-load IIFE above
     renderPoll(window.CLUB || { polls: [] });
 
     // ============================================
@@ -2857,11 +2906,19 @@
         list.innerHTML = '<div style="color:var(--ink-light);font-style:italic;padding:0.5rem 0;">No upcoming meetings scheduled.</div>';
         return;
       }
-      list.innerHTML = meetings.map(m => {
+      const currentUser = getCurrentUser();
+      const isManager   = currentUser && currentUser.username === club.managerUsername;
+
+      list.innerHTML = meetings.map((m, idx) => {
         const dt    = new Date(m.datetime);
         const day   = dt.getDate();
         const month = dt.toLocaleString("en-US", { month: "short" }).toUpperCase();
         const time  = dt.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+        const managerBtns = isManager ? `
+          <div style="display:flex;gap:0.5rem;margin-left:auto;flex-shrink:0;">
+            <button onclick="openEditMeetingModal(${idx})" style="background:rgba(201,169,154,0.15);border:1px solid rgba(201,169,154,0.4);border-radius:8px;padding:0.35rem 0.8rem;font-size:0.78rem;cursor:pointer;color:var(--ink-light);transition:background 0.2s;">✏ Edit</button>
+            <button onclick="deleteMeeting(${idx})" style="background:rgba(210,70,60,0.08);border:1px solid rgba(210,90,80,0.35);border-radius:8px;padding:0.35rem 0.8rem;font-size:0.78rem;cursor:pointer;color:rgba(235,155,145,0.9);transition:background 0.2s;">🗑</button>
+          </div>` : "";
         return `
           <div class="meeting-card">
             <div class="meeting-date">
@@ -2872,15 +2929,52 @@
               <h3 class="meeting-title">${escapeHtml(m.title || "Meeting")}</h3>
               <p class="meeting-info">${time}</p>
             </div>
+            ${managerBtns}
           </div>`;
       }).join("");
+    }     
+
+    function deleteMeeting(idx) {
+      const club = window.CLUB;
+      club.meetings.splice(idx, 1);
+      saveClub(club);
+      window.CLUB = club;
+      renderMeetings(club);
     }
 
+    let editingMeetingIdx = null;
+
+    function openEditMeetingModal(idx) {
+      editingMeetingIdx = idx;
+      const m = window.CLUB.meetings[idx];
+
+      document.getElementById("meeting-title-input").value = m.title || "";
+      document.getElementById("meeting-title-count").textContent = (m.title || "").length + " / 50";
+      document.getElementById("meeting-datetime-error").textContent = "";
+
+  // Set min to now
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  document.getElementById("meeting-datetime-input").min = now.toISOString().slice(0, 16);
+  document.getElementById("meeting-datetime-input").value = new Date(new Date(m.datetime).getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+  // Change button label
+  document.getElementById("meeting-modal-save").textContent = "Save Changes ✦";
+  document.getElementById("meeting-modal-overlay").classList.add("open");
+  document.getElementById("meeting-title-input").focus();
+}
+
     function openMeetingModal() {
+      editingMeetingIdx = null;
       document.getElementById("meeting-title-input").value    = "";
       document.getElementById("meeting-datetime-input").value = "";
       document.getElementById("meeting-title-count").textContent = "0 / 50";
       document.getElementById("meeting-datetime-error").textContent = "";
+
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById("meeting-datetime-input").min = now.toISOString().slice(0, 16);
+
       document.getElementById("meeting-modal-overlay").classList.add("open");
       document.getElementById("meeting-title-input").focus();
     }
@@ -2899,11 +2993,21 @@
         errEl.textContent = "Please pick a date and time.";
         return;
       }
+      if (new Date(datetime) < new Date()) {
+        errEl.textContent = "Please pick a future date and time.";
+        return;
+      }
 
       const rawTitle = new URLSearchParams(window.location.search).get("clubTitle");
       const club     = getClubByTitle(decodeURIComponent(rawTitle));
       if (!club.meetings) club.meetings = [];
-      club.meetings.push({ title: title || "Meeting", datetime, createdAt: new Date().toISOString() });
+
+      if (editingMeetingIdx !== null) {
+        club.meetings[editingMeetingIdx] = { title: title || "Meeting", datetime, createdAt: club.meetings[editingMeetingIdx].createdAt };
+      } else {
+        club.meetings.push({ title: title || "Meeting", datetime, createdAt: new Date().toISOString() });
+      }
+
       saveClub(club);
       window.CLUB = club;
       closeMeetingModal();
