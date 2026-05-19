@@ -1,18 +1,10 @@
 const SECURITY_QUESTIONS = [
-  // Book-Related
-  "What is the title of the first book you remember reading as a child?",
-  "What is the name of your favorite fictional character?",
-  "Which book did you most enjoy reading during high school?",
-  "What was the last name of your favorite author when you were a teenager?",
-  "What is the title of the first \"grown-up\" book you ever finished?",
-  "In which fictional world or city would you most like to live?",
-  "What is the title of the book you have re-read the most times?",
-  "What was the first name of your favorite elementary school librarian?",
-  // General
-  "What was the last name of your favorite teacher in middle school?",
-  "What is the middle name of your oldest sibling?",
-  "What was the name of the first street you lived on?",
-  "In what city did your parents meet?",
+  "What is your favorite book?",
+  "Which book have you re-read the most?",
+  "What is the first book you remember reading?",
+  "Who is your favorite fictional character?",
+  "Which fictional place would you most like to live in?",
+  "What was your childhood nickname?",
 ];
 
 const q1Select = document.getElementById("securityQ1");
@@ -61,6 +53,30 @@ function addToggle(btnId, inputId) {
 
 addToggle("togglePw", "password");
 addToggle("toggleConfirmPw", "confirmPassword");
+
+const emailInput = document.getElementById("email");
+
+emailInput.addEventListener("blur", function () {
+
+  const email = emailInput.value.trim();
+
+  clearError("emailError");
+  setInvalid("email", false);
+
+  if (!email) return;
+
+  const users = getUsers();
+
+  const emailExists = users.some(
+    (u) => u.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (emailExists) {
+    showError("emailError", "An account with this email already exists.");
+    setInvalid("email", true);
+  }
+
+});
 
 // --- Validation helpers ---
 function showError(id, msg) {
