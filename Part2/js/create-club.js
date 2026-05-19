@@ -129,7 +129,24 @@ function initCharCounter(inputId, countId, max) {
 }
 
 initCharCounter("club-name", "club-name-count", 40);
-initCharCounter("club-desc",  "club-desc-count",  200);
+initCharCounter("club-desc",  "club-desc-count",  133);
+
+// ============================================
+// REAL-TIME DUPLICATE NAME CHECK (on blur)
+// ============================================
+document.getElementById("club-name").addEventListener("blur", function () {
+  if (isEditMode) return;
+  const val = this.value.trim();
+  if (!val) return;
+  const exists = getClubs().some(c => c.clubTitle.toLowerCase() === val.toLowerCase());
+  if (exists) {
+    showError("club-name-error", "A club with this name already exists.");
+    setInvalid("club-name", true);
+  } else {
+    clearError("club-name-error");
+    setInvalid("club-name", false);
+  }
+});
 
 // ============================================
 // LIVE PREVIEW
@@ -186,6 +203,10 @@ document.getElementById("create-club-form").addEventListener("submit", function 
       valid = false;
     } else if (clubName.length > 40) {
       showError("club-name-error", "Club name must be 40 characters or fewer.");
+      setInvalid("club-name", true);
+      valid = false;
+    } else if (getClubs().some(c => c.clubTitle.toLowerCase() === clubName.toLowerCase())) {
+      showError("club-name-error", "A club with this name already exists. Please choose a different name.");
       setInvalid("club-name", true);
       valid = false;
     }
