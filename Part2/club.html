@@ -603,7 +603,22 @@
       gap: 0.8rem;
       align-items: center;
       margin-bottom: 0.4rem;
+      justify-content: space-between;
     }
+
+    .btn-delete-ann {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 3px 5px;
+      border-radius: 6px;
+      color: #c0392b;
+      opacity: 0.55;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .btn-delete-ann:hover { opacity: 1; background: rgba(192,57,43,0.1); }
 
     .history-item-date {
       font-size: 0.72rem;
@@ -755,6 +770,7 @@
       transition: opacity 0.3s ease;
       z-index: 3;
       pointer-events: none;
+      overflow: hidden;
     }
 
     .poll-book:hover .poll-hover-overlay { opacity: 1; }
@@ -779,6 +795,11 @@
       font-size: 0.9rem;
       color: rgba(245, 237, 228, 0.85);
       line-height: 1.65;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      line-clamp: 5;
+      -webkit-box-orient: vertical;
     }
 
     .poll-votes-bar,
@@ -1142,11 +1163,27 @@
       display: block;
     }
 
-    .read-book-rating {
+    .read-star-row {
       display: flex;
-      gap: 2px;
-      font-size: 0.75rem;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: 1px;
+      margin-top: 0.35rem;
     }
+    .read-star {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.05rem;
+      padding: 0 1px;
+      color: #d4c5b8;
+      line-height: 1;
+      transition: color 0.1s;
+    }
+    .read-star.filled { color: #c9a46a; }
+    .read-star-row:hover .read-star { color: #d4c5b8; }
+    .read-star-row:hover .read-star:hover,
+    .read-star-row:hover .read-star:hover ~ .read-star { color: #c9a46a; }
 
     .read-book-meta { padding: 0 0.1rem; }
 
@@ -1436,6 +1473,80 @@
       display: flex; justify-content: space-between; align-items: center;
       margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--border);
     }
+
+    .btn-end-vote {
+      background: none;
+      border: 1px solid rgba(180,80,80,0.45);
+      color: #b45050;
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: background 0.2s, color 0.2s;
+      display: none;
+    }
+    .btn-end-vote:hover { background: rgba(180,80,80,0.1); color: #922020; }
+
+    .end-vote-overlay {
+      position: fixed; inset: 0;
+      background: rgba(22,14,10,0.72);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .end-vote-overlay.open { display: flex; }
+    .end-vote-modal {
+      background: var(--parchment);
+      border-radius: 24px;
+      padding: 2.4rem 2.2rem 2rem;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+    }
+    .end-vote-icon { font-size: 2.4rem; margin-bottom: 1rem; }
+    .end-vote-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 0.55rem;
+    }
+    .end-vote-subtext {
+      font-size: 0.86rem; color: var(--ink-light);
+      line-height: 1.55; margin-bottom: 1.8rem;
+    }
+    .end-vote-actions { display: flex; gap: 0.8rem; justify-content: center; }
+
+    .btn-poll-expand {
+      position: absolute;
+      top: 0.7rem; left: 0.7rem;
+      width: 26px; height: 26px;
+      background: rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(4px);
+      border: none; border-radius: 50%;
+      color: #fff; font-size: 1.15rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 6;
+      transition: background 0.2s, transform 0.15s;
+      pointer-events: auto;
+      flex-shrink: 0;
+    }
+    .btn-poll-expand:hover { background: rgba(0, 0, 0, 0.65); }
+    .btn-poll-expand.active { background: var(--dusty-rose); transform: rotate(45deg); }
+
+    .poll-book-desc {
+      display: none;
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      line-height: 1.6;
+      margin-top: 0.55rem;
+      text-align: left;
+      padding: 0 0.1rem;
+    }
+    .poll-book.expanded .poll-book-desc { display: block; }
   </style>
 </head>
 
@@ -1525,43 +1636,17 @@
       <div class="section-header">
         <h2 class="section-title">Currently Reading</h2>
       </div>
-      <div class="current-book-layout">
-        <div class="book-cover-small" style="background:none; padding:0; box-shadow:none; border-radius:14px; overflow:hidden; width:120px; height:170px;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210" width="120" height="170">
-            <defs>
-              <linearGradient id="cur_fw" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#5a2a30"/>
-                <stop offset="100%" stop-color="#280d10"/>
-              </linearGradient>
-              <linearGradient id="cur_spine" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="rgba(0,0,0,0.3)"/>
-                <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-              </linearGradient>
-            </defs>
-            <rect width="148" height="210" fill="url(#cur_fw)"/>
-            <rect width="9" height="210" fill="url(#cur_spine)"/>
-            <rect x="9" y="8" width="131" height="194" rx="1" fill="none" stroke="#e87880" stroke-width="0.6" stroke-opacity="0.4"/>
-            <text x="74" y="72" font-size="38" text-anchor="middle" dominant-baseline="middle">🐉</text>
-            <text x="74" y="122" font-family="Georgia,serif" font-size="14" font-weight="bold" fill="#e87880" text-anchor="middle">Fourth Wing</text>
-            <line x1="30" y1="150" x2="118" y2="150" stroke="#e87880" stroke-width="0.5" stroke-opacity="0.4"/>
-            <text x="74" y="166" font-family="Georgia,serif" font-size="9" fill="#e87880" text-anchor="middle" font-style="italic" opacity="0.75">Rebecca Yarros</text>
-            <rect x="18" y="182" width="112" height="16" rx="3" fill="rgba(232,120,128,0.18)"/>
-            <text x="74" y="190" font-family="Georgia,serif" font-size="7.5" fill="#e87880" text-anchor="middle" dominant-baseline="middle" letter-spacing="1">IN PROGRESS</text>
-          </svg>
-        </div>
-        <div>
-          <h3 class="book-title">Fourth Wing</h3>
-          <p class="book-author">Rebecca Yarros</p>
-          <p class="book-summary">Dragons, war college, romance, trauma and questionable emotional stability.</p>
-        </div>
-      </div>
+      <div id="current-book-content"></div>
     </section>
 
     <!-- POLL -->
     <section class="glass-section">
       <div class="section-header">
         <h2 class="section-title">Vote — Next Read</h2>
-        <button class="btn-add-announcement" id="add-poll-btn" style="display:none;" title="Create new poll">+</button>
+        <div style="display:flex; gap:0.6rem; align-items:center;">
+          <button class="btn-end-vote" id="end-vote-btn" onclick="openEndVoteModal()">End the vote!</button>
+          <button class="btn-add-announcement" id="add-poll-btn" style="display:none;" title="Create new poll">+</button>
+        </div>
       </div>
       <p class="poll-subtitle">Choose up to 2 books you'd like the club to read next. Hover over a cover to read the summary.</p>
 
@@ -1570,6 +1655,7 @@
         <!-- Book 1: A Court of Thorns and Roses -->
         <div class="poll-book" data-index="0" onclick="togglePollVote(0)">
           <div class="poll-book-cover poll-book-cover-1">
+            <button class="btn-poll-expand" onclick="toggleBookExpand(event,0)" title="Expand description">+</button>
             <div class="poll-cover-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" width="100%" height="100%">
   <defs>
     <linearGradient id="bg_acotar" x1="0" y1="0" x2="0.4" y2="1">
@@ -1602,6 +1688,7 @@
           <div class="poll-book-info">
             <div class="poll-book-name">A Court of Thorns and Roses</div>
             <div class="poll-book-author-small">Sarah J. Maas</div>
+            <div class="poll-book-desc">A young huntress is dragged into the treacherous world of the Fae after killing a wolf in the woods. In a land of beauty, magic, and danger, she discovers a love she never expected — and a curse that could destroy everything.</div>
             <div class="poll-votes-bar"><div class="poll-votes-fill" style="width:60%"></div></div>
             <div class="poll-votes-count">3 votes</div>
           </div>
@@ -1610,6 +1697,7 @@
         <!-- Book 2: The Name of the Wind -->
         <div class="poll-book" data-index="1" onclick="togglePollVote(1)">
           <div class="poll-book-cover poll-book-cover-2">
+            <button class="btn-poll-expand" onclick="toggleBookExpand(event,1)" title="Expand description">+</button>
             <div class="poll-cover-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" width="100%" height="100%">
   <defs>
     <linearGradient id="bg_notw" x1="0" y1="0" x2="0.4" y2="1">
@@ -1641,6 +1729,7 @@
           <div class="poll-book-info">
             <div class="poll-book-name">The Name of the Wind</div>
             <div class="poll-book-author-small">Patrick Rothfuss</div>
+            <div class="poll-book-desc">The legendary Kvothe narrates his own extraordinary life — from a gifted child in a traveling troupe, to a homeless orphan, to a student of magic at a prestigious University, to a mythical hero. A masterpiece of modern fantasy.</div>
             <div class="poll-votes-bar"><div class="poll-votes-fill" style="width:40%"></div></div>
             <div class="poll-votes-count">2 votes</div>
           </div>
@@ -1649,6 +1738,7 @@
         <!-- Book 3: The Priory of the Orange Tree -->
         <div class="poll-book" data-index="2" onclick="togglePollVote(2)">
           <div class="poll-book-cover poll-book-cover-3">
+            <button class="btn-poll-expand" onclick="toggleBookExpand(event,2)" title="Expand description">+</button>
             <div class="poll-cover-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" width="100%" height="100%">
   <defs>
     <linearGradient id="bg_priory" x1="0" y1="0" x2="0.4" y2="1">
@@ -1680,6 +1770,7 @@
           <div class="poll-book-info">
             <div class="poll-book-name">Priory of the Orange Tree</div>
             <div class="poll-book-author-small">Samantha Shannon</div>
+            <div class="poll-book-desc">A world divided by ancient dragonfire. A queen defending a house built on lies. A dragonrider on a secret mission from the East. A sweeping, feminist high fantasy epic about power, sacrifice, and the women who hold the world together.</div>
             <div class="poll-votes-bar"><div class="poll-votes-fill" style="width:20%"></div></div>
             <div class="poll-votes-count">1 vote</div>
           </div>
@@ -1688,6 +1779,7 @@
         <!-- Book 4: The Lies of Locke Lamora -->
         <div class="poll-book" data-index="3" onclick="togglePollVote(3)">
           <div class="poll-book-cover poll-book-cover-4">
+            <button class="btn-poll-expand" onclick="toggleBookExpand(event,3)" title="Expand description">+</button>
             <div class="poll-cover-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 340" width="100%" height="100%">
   <defs>
     <linearGradient id="bg_locke" x1="0" y1="0" x2="0.4" y2="1">
@@ -1719,6 +1811,7 @@
           <div class="poll-book-info">
             <div class="poll-book-name">The Lies of Locke Lamora</div>
             <div class="poll-book-author-small">Scott Lynch</div>
+            <div class="poll-book-desc">A gang of brilliant con artists steals from Camorr's corrupt nobility with elaborate schemes — until a mysterious crime lord called the Gray King threatens to destroy everything. Clever, dark, and wickedly entertaining.</div>
             <div class="poll-votes-bar"><div class="poll-votes-fill" style="width:0%"></div></div>
             <div class="poll-votes-count">0 votes</div>
           </div>
@@ -1737,151 +1830,11 @@
     <section class="glass-section">
       <div class="section-header">
         <h2 class="section-title">Books We've Read</h2>
-        <span style="font-size:1rem; color:var(--ink-light); font-style:italic;">12 books · scroll to explore →</span>
+        <span id="books-read-count" style="font-size:1rem; color:var(--ink-light); font-style:italic;"></span>
       </div>
 
       <div class="books-read-scroll-wrap">
         <div class="books-read-track" id="books-read-track">
-
-          <!-- 1 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a2040"/><stop offset="100%" stop-color="#1a0a18"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb1)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#d4a0c0" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">👑</text><text x="74" y="118" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#d4a0c0" text-anchor="middle">The Way of</text><text x="74" y="134" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#d4a0c0" text-anchor="middle">Kings</text><line x1="32" y1="160" x2="116" y2="160" stroke="#d4a0c0" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="175" font-family="Georgia,serif" font-size="9" fill="#d4a0c0" text-anchor="middle" font-style="italic" opacity="0.7">Brandon Sanderson</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">The Way of Kings</div>
-              <div class="read-book-author">Brandon Sanderson</div>
-              <div class="read-book-rating">⭐⭐⭐⭐⭐</div>
-              <div class="read-book-date">Jan 2024</div>
-            </div>
-          </div>
-
-          <!-- 2 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5a3020"/><stop offset="100%" stop-color="#2a1208"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb2)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#e8c090" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🧙</text><text x="74" y="118" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#e8c090" text-anchor="middle">The Hobbit</text><line x1="32" y1="148" x2="116" y2="148" stroke="#e8c090" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="163" font-family="Georgia,serif" font-size="9" fill="#e8c090" text-anchor="middle" font-style="italic" opacity="0.7">J.R.R. Tolkien</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">The Hobbit</div>
-              <div class="read-book-author">J.R.R. Tolkien</div>
-              <div class="read-book-rating">⭐⭐⭐⭐⭐</div>
-              <div class="read-book-date">Feb 2024</div>
-            </div>
-          </div>
-
-          <!-- 3 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1e3a5a"/><stop offset="100%" stop-color="#080e1e"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb3)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#80a8d8" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🌊</text><text x="74" y="118" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#80a8d8" text-anchor="middle">The Blade</text><text x="74" y="134" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#80a8d8" text-anchor="middle">Itself</text><line x1="32" y1="158" x2="116" y2="158" stroke="#80a8d8" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="173" font-family="Georgia,serif" font-size="9" fill="#80a8d8" text-anchor="middle" font-style="italic" opacity="0.7">Joe Abercrombie</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">The Blade Itself</div>
-              <div class="read-book-author">Joe Abercrombie</div>
-              <div class="read-book-rating">⭐⭐⭐⭐</div>
-              <div class="read-book-date">Mar 2024</div>
-            </div>
-          </div>
-
-          <!-- 4 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a4a2a"/><stop offset="100%" stop-color="#0d180d"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb4)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#90d890" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🌿</text><text x="74" y="118" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#90d890" text-anchor="middle">Mistborn</text><line x1="32" y1="148" x2="116" y2="148" stroke="#90d890" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="163" font-family="Georgia,serif" font-size="9" fill="#90d890" text-anchor="middle" font-style="italic" opacity="0.7">Brandon Sanderson</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">Mistborn</div>
-              <div class="read-book-author">Brandon Sanderson</div>
-              <div class="read-book-rating">⭐⭐⭐⭐⭐</div>
-              <div class="read-book-date">Apr 2024</div>
-            </div>
-          </div>
-
-          <!-- 5 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6a3a50"/><stop offset="100%" stop-color="#2a1020"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb5)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#e890b0" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🗺️</text><text x="74" y="112" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#e890b0" text-anchor="middle">An Empire of</text><text x="74" y="128" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#e890b0" text-anchor="middle">Ruined Stone</text><line x1="32" y1="155" x2="116" y2="155" stroke="#e890b0" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="170" font-family="Georgia,serif" font-size="9" fill="#e890b0" text-anchor="middle" font-style="italic" opacity="0.7">Kerstin Hall</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">An Empire of Ruined Stone</div>
-              <div class="read-book-author">Kerstin Hall</div>
-              <div class="read-book-rating">⭐⭐⭐⭐</div>
-              <div class="read-book-date">May 2024</div>
-            </div>
-          </div>
-
-          <!-- 6 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a3a18"/><stop offset="100%" stop-color="#1e1808"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb6)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#d8c070" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🦅</text><text x="74" y="118" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#d8c070" text-anchor="middle">Uprooted</text><line x1="32" y1="148" x2="116" y2="148" stroke="#d8c070" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="163" font-family="Georgia,serif" font-size="9" fill="#d8c070" text-anchor="middle" font-style="italic" opacity="0.7">Naomi Novik</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">Uprooted</div>
-              <div class="read-book-author">Naomi Novik</div>
-              <div class="read-book-rating">⭐⭐⭐⭐⭐</div>
-              <div class="read-book-date">Jun 2024</div>
-            </div>
-          </div>
-
-          <!-- 7 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb7" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a1a3a"/><stop offset="100%" stop-color="#080810"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb7)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#a890f0" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">⚡</text><text x="74" y="112" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#a890f0" text-anchor="middle">The Magicians</text><line x1="32" y1="145" x2="116" y2="145" stroke="#a890f0" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="160" font-family="Georgia,serif" font-size="9" fill="#a890f0" text-anchor="middle" font-style="italic" opacity="0.7">Lev Grossman</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">The Magicians</div>
-              <div class="read-book-author">Lev Grossman</div>
-              <div class="read-book-rating">⭐⭐⭐⭐</div>
-              <div class="read-book-date">Jul 2024</div>
-            </div>
-          </div>
-
-          <!-- 8 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb8" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a1a10"/><stop offset="100%" stop-color="#180808"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb8)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#f89060" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🔥</text><text x="74" y="112" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#f89060" text-anchor="middle">Children of</text><text x="74" y="128" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#f89060" text-anchor="middle">Blood and Bone</text><line x1="32" y1="155" x2="116" y2="155" stroke="#f89060" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="170" font-family="Georgia,serif" font-size="9" fill="#f89060" text-anchor="middle" font-style="italic" opacity="0.7">Tomi Adeyemi</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">Children of Blood and Bone</div>
-              <div class="read-book-author">Tomi Adeyemi</div>
-              <div class="read-book-rating">⭐⭐⭐⭐</div>
-              <div class="read-book-date">Aug 2024</div>
-            </div>
-          </div>
-
-          <!-- 9 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb9" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a4050"/><stop offset="100%" stop-color="#0e1820"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb9)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#78c8d8" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🧊</text><text x="74" y="112" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#78c8d8" text-anchor="middle">The Stormlight</text><text x="74" y="128" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#78c8d8" text-anchor="middle">Archive</text><line x1="32" y1="155" x2="116" y2="155" stroke="#78c8d8" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="170" font-family="Georgia,serif" font-size="9" fill="#78c8d8" text-anchor="middle" font-style="italic" opacity="0.7">Brandon Sanderson</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">Words of Radiance</div>
-              <div class="read-book-author">Brandon Sanderson</div>
-              <div class="read-book-rating">⭐⭐⭐⭐⭐</div>
-              <div class="read-book-date">Sep 2024</div>
-            </div>
-          </div>
-
-          <!-- 10 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb10" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#503020"/><stop offset="100%" stop-color="#201008"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb10)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#d0a870" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🏔️</text><text x="74" y="112" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#d0a870" text-anchor="middle">The Name of</text><text x="74" y="128" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#d0a870" text-anchor="middle">All Things</text><line x1="32" y1="155" x2="116" y2="155" stroke="#d0a870" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="170" font-family="Georgia,serif" font-size="9" fill="#d0a870" text-anchor="middle" font-style="italic" opacity="0.7">Jenn Lyons</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">The Name of All Things</div>
-              <div class="read-book-author">Jenn Lyons</div>
-              <div class="read-book-rating">⭐⭐⭐</div>
-              <div class="read-book-date">Oct 2024</div>
-            </div>
-          </div>
-
-          <!-- 11 -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb11" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a2a50"/><stop offset="100%" stop-color="#181028"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb11)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#c8a8e0" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🌙</text><text x="74" y="112" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#c8a8e0" text-anchor="middle">Spinning</text><text x="74" y="128" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#c8a8e0" text-anchor="middle">Silver</text><line x1="32" y1="155" x2="116" y2="155" stroke="#c8a8e0" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="170" font-family="Georgia,serif" font-size="9" fill="#c8a8e0" text-anchor="middle" font-style="italic" opacity="0.7">Naomi Novik</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">Spinning Silver</div>
-              <div class="read-book-author">Naomi Novik</div>
-              <div class="read-book-rating">⭐⭐⭐⭐⭐</div>
-              <div class="read-book-date">Nov 2024</div>
-            </div>
-          </div>
-
-          <!-- 12: Fourth Wing (in progress — rateable) -->
-          <div class="read-book-card">
-            <div class="read-book-cover"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 210"><defs><linearGradient id="rb12" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5a2a30"/><stop offset="100%" stop-color="#280d10"/></linearGradient></defs><rect width="148" height="210" fill="url(#rb12)"/><rect width="8" height="210" fill="rgba(0,0,0,0.25)"/><rect x="8" y="8" width="132" height="194" rx="1" fill="none" stroke="#e87880" stroke-width="0.6" stroke-opacity="0.4"/><text x="74" y="70" font-size="34" text-anchor="middle" dominant-baseline="middle">🐉</text><text x="74" y="112" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#e87880" text-anchor="middle">Fourth Wing</text><line x1="32" y1="145" x2="116" y2="145" stroke="#e87880" stroke-width="0.5" stroke-opacity="0.4"/><text x="74" y="160" font-family="Georgia,serif" font-size="9" fill="#e87880" text-anchor="middle" font-style="italic" opacity="0.7">Rebecca Yarros</text><rect x="20" y="178" width="108" height="18" rx="3" fill="rgba(232,120,128,0.2)"/><text x="74" y="187" font-family="Georgia,serif" font-size="8" fill="#e87880" text-anchor="middle" dominant-baseline="middle" letter-spacing="1">IN PROGRESS</text></svg></div>
-            <div class="read-book-meta">
-              <div class="read-book-title">Fourth Wing</div>
-              <div class="read-book-author">Rebecca Yarros</div>
-              <div class="star-rating" id="fw-stars" data-rating="0">
-                <span class="star" data-val="1">☆</span>
-                <span class="star" data-val="2">☆</span>
-                <span class="star" data-val="3">☆</span>
-                <span class="star" data-val="4">☆</span>
-                <span class="star" data-val="5">☆</span>
-              </div>
-              <div class="star-label" id="fw-star-label">Rate this book</div>
-              <div class="read-book-date" id="fw-current-date"></div>
-            </div>
-          </div>
-
         </div>
       </div>
 
@@ -1895,20 +1848,9 @@
     <section class="glass-section">
       <div class="section-header">
         <h2 class="section-title">Upcoming Meetings</h2>
+        <button class="btn-add-announcement" id="add-meeting-btn" style="display:none;" title="Schedule meeting">+</button>
       </div>
-      <div class="meetings-list">
-        <div class="meeting-card">
-          <div class="meeting-date">
-            <span class="meeting-day">18</span>
-            <span class="meeting-month">MAY</span>
-          </div>
-          <div class="meeting-info-wrap">
-            <h3 class="meeting-title">Chapters 1–10 Discussion</h3>
-            <p class="meeting-info">20:00 · Zoom Meeting</p>
-          </div>
-          <button class="btn-vintage">Join</button>
-        </div>
-      </div>
+      <div class="meetings-list" id="meetings-list"></div>
     </section>
 
     <!-- MEMBERS -->
@@ -1947,6 +1889,54 @@
       <div class="delete-confirm-actions">
         <button class="btn-vintage" id="delete-confirm-yes">Yes, delete it</button>
         <button class="btn-secondary" id="delete-confirm-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- END VOTE CONFIRM MODAL -->
+  <div class="end-vote-overlay" id="end-vote-overlay">
+    <div class="end-vote-modal">
+      <div class="end-vote-icon">📊</div>
+      <div class="end-vote-title">Are you sure you want to close the vote?</div>
+      <p class="end-vote-subtext">The current book will be moved to the books we've read list, and the winning book will become the club's next read.</p>
+      <div class="end-vote-actions">
+        <button class="btn-vintage" onclick="confirmEndVote()">I understand</button>
+        <button class="btn-secondary" onclick="closeEndVoteModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD MEETING MODAL -->
+  <div class="modal-overlay" id="meeting-modal-overlay">
+    <div class="book-search-modal" style="max-width:420px;">
+      <button class="modal-close" id="meeting-modal-close">✕</button>
+      <h2 class="section-title" style="margin-bottom:1.6rem;">Schedule a Meeting</h2>
+
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+        <div>
+          <div class="poll-choices-label" style="margin-bottom:0.5rem;">
+            Title <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.78rem;">(optional)</span>
+          </div>
+          <input type="text" id="meeting-title-input" class="book-search-input"
+                 placeholder="e.g. Chapters 1–5 Discussion" maxlength="50"
+                 style="width:100%;box-sizing:border-box;">
+          <div style="display:flex;justify-content:flex-end;margin-top:0.3rem;">
+            <span class="compose-char-count" id="meeting-title-count">0 / 50</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="poll-choices-label" style="margin-bottom:0.5rem;">Date &amp; Time</div>
+          <input type="datetime-local" id="meeting-datetime-input" class="book-search-input"
+                 style="width:100%;box-sizing:border-box;">
+          <span id="meeting-datetime-error"
+                style="font-size:0.82rem;color:#c0392b;display:block;min-height:1.1em;margin-top:0.3rem;"></span>
+        </div>
+      </div>
+
+      <div class="poll-modal-footer">
+        <button class="btn-secondary" id="meeting-modal-cancel">Cancel</button>
+        <button class="btn-save-announcement" id="meeting-modal-save" style="background:#8b5e3c;">Schedule ✦</button>
       </div>
     </div>
   </div>
@@ -2045,11 +2035,12 @@
       // Announcements
       renderAnnouncements(club);
 
-      // Meetings — empty state for new clubs
-      if (!club.meetings || club.meetings.length === 0) {
-        document.querySelector(".meetings-list").innerHTML =
-          '<div style="color:var(--ink-light);font-style:italic;padding:0.5rem 0;">No upcoming meetings scheduled.</div>';
-      }
+      // Currently Reading & Books We've Read
+      renderCurrentBook(club);
+      renderBooksRead(club);
+
+      // Meetings
+      renderMeetings(club);
 
       // Build members array from bookies_users
       const allUsers = getUsers();
@@ -2135,6 +2126,13 @@
           addAnnouncementBtn.style.display = "flex";
 
           document.getElementById("add-poll-btn").style.display = "flex";
+          document.getElementById("add-meeting-btn").style.display = "flex";
+
+          // Show "End the vote!" only when there is an active, non-ended poll
+          const activePoll = (club.polls || []).slice(-1)[0];
+          if (activePoll && activePoll.books && activePoll.books.length > 0 && !activePoll.ended) {
+            document.getElementById("end-vote-btn").style.display = "inline-block";
+          }
 
           const compose      = document.getElementById("announcement-compose");
           const textarea     = document.getElementById("announcement-textarea");
@@ -2190,52 +2188,9 @@
     })();
 
     // ============================================
-    // DATA
+    // MEMBERS
     // ============================================
-    const MEMBERS = window.MEMBERS || [
-      {
-        initial: "V",
-        nickname: "Vanessa",
-        username: "@vanessa_reads",
-        isManager: true,
-        joinDate: "January 2024",
-        clubs: [
-          { name: "Fantasy Lovers", role: "Manager" },
-          { name: "Classic Lit Corner", role: "Member" }
-        ]
-      },
-      {
-        initial: "R",
-        nickname: "Rachel",
-        username: "@r_bookworm",
-        isManager: false,
-        joinDate: "February 2024",
-        clubs: [
-          { name: "Fantasy Lovers", role: "Member" }
-        ]
-      },
-      {
-        initial: "M",
-        nickname: "Maya",
-        username: "@maya_pages",
-        isManager: false,
-        joinDate: "March 2024",
-        clubs: [
-          { name: "Fantasy Lovers", role: "Member" },
-          { name: "Sci-Fi Society", role: "Manager" }
-        ]
-      },
-      {
-        initial: "D",
-        nickname: "Daniel",
-        username: "@daniel_d",
-        isManager: false,
-        joinDate: "April 2024",
-        clubs: [
-          { name: "Fantasy Lovers", role: "Member" }
-        ]
-      }
-    ];
+    const MEMBERS = window.MEMBERS || [];
 
     // ============================================
     // RENDER MEMBERS
@@ -2311,8 +2266,132 @@
       return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Renders the active poll (last entry in club.polls) into #poll-grid.
-    // Grid layout adapts: 1–3 books → single row, 4 books → 2×2.
+    // ============================================
+    // CURRENTLY READING
+    // ============================================
+    function renderCurrentBook(club) {
+      const el = document.getElementById("current-book-content");
+      if (!club.currentBook) {
+        el.innerHTML = '<p style="color:var(--ink-light);font-style:italic;padding:0.5rem 0;">No book currently set. End a vote to set the current read!</p>';
+        return;
+      }
+      const b = club.currentBook;
+      const coverHtml = b.cover
+        ? `<img src="${escapeHtml(b.cover)}" alt=""
+             style="width:120px;height:170px;object-fit:cover;border-radius:14px;flex-shrink:0;box-shadow:0 8px 24px rgba(0,0,0,0.15);"
+             onerror="this.style.display='none'">`
+        : `<div style="width:120px;height:170px;border-radius:14px;flex-shrink:0;background:linear-gradient(135deg,rgba(201,169,154,0.3),rgba(168,184,160,0.2));display:flex;align-items:center;justify-content:center;font-size:3rem;">📖</div>`;
+      el.innerHTML = `
+        <div class="current-book-layout">
+          ${coverHtml}
+          <div>
+            <h3 class="book-title">${escapeHtml(b.title)}</h3>
+            <p class="book-author">${escapeHtml(b.author)}</p>
+            ${b.description ? `<p class="book-summary">${escapeHtml(b.description)}</p>` : ""}
+          </div>
+        </div>`;
+    }
+
+    // ============================================
+    // BOOKS WE'VE READ
+    // ============================================
+    function renderBooksRead(club) {
+      const track    = document.getElementById("books-read-track");
+      const countEl  = document.getElementById("books-read-count");
+      const books    = club.booksRead || [];
+      const n        = books.length;
+      countEl.textContent = n > 0 ? n + " book" + (n !== 1 ? "s" : "") + " · scroll to explore →" : "";
+      if (n === 0) {
+        track.innerHTML = '<p style="color:var(--ink-light);font-style:italic;padding:0.5rem 0.2rem;">No books read yet.</p>';
+        return;
+      }
+      const currentUser = getCurrentUser();
+      track.innerHTML = [...books].reverse().map((b, revIdx) => {
+        const originalIdx = books.length - 1 - revIdx;
+        const userRating  = (b.ratings && currentUser) ? (b.ratings[currentUser.username] || 0) : 0;
+        const starsHtml   = [5,4,3,2,1].map(s =>
+          `<button class="read-star${s <= userRating ? ' filled' : ''}" onclick="rateBook(${originalIdx},${s})">★</button>`
+        ).join("");
+        const coverHtml = b.cover
+          ? `<img src="${escapeHtml(b.cover)}" alt=""
+               style="width:148px;height:210px;object-fit:cover;display:block;"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+             <div style="width:148px;height:210px;display:none;align-items:center;justify-content:center;font-size:3rem;background:rgba(201,169,154,0.2);">📖</div>`
+          : `<div style="width:148px;height:210px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(201,169,154,0.2);">📖</div>`;
+        return `
+          <div class="read-book-card">
+            <div class="read-book-cover">${coverHtml}</div>
+            <div class="read-book-meta">
+              <div class="read-book-title">${escapeHtml(b.title)}</div>
+              <div class="read-book-author">${escapeHtml(b.author)}</div>
+              <div class="read-star-row">${starsHtml}</div>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function rateBook(originalIdx, val) {
+      const user = getCurrentUser();
+      if (!user) return;
+      const club = window.CLUB;
+      if (!club.booksRead || !club.booksRead[originalIdx]) return;
+      if (!club.booksRead[originalIdx].ratings) club.booksRead[originalIdx].ratings = {};
+      club.booksRead[originalIdx].ratings[user.username] = val;
+      saveClub(club);
+      window.CLUB = club;
+      renderBooksRead(club);
+    }
+
+    // ============================================
+    // END VOTE MODAL
+    // ============================================
+    function openEndVoteModal() {
+      document.getElementById("end-vote-overlay").classList.add("open");
+    }
+
+    function closeEndVoteModal() {
+      document.getElementById("end-vote-overlay").classList.remove("open");
+    }
+
+    document.getElementById("end-vote-overlay").addEventListener("click", function (e) {
+      if (e.target === this) closeEndVoteModal();
+    });
+
+    function confirmEndVote() {
+      const club  = window.CLUB;
+      const polls = club.polls || [];
+      const poll  = polls.length > 0 ? polls[polls.length - 1] : null;
+      if (!poll || !poll.books || poll.books.length === 0) { closeEndVoteModal(); return; }
+
+      // Pick winner — highest voteCount, tie goes to first
+      const winner = poll.books.reduce((best, b) =>
+        (b.voteCount || 0) > (best.voteCount || 0) ? b : best, poll.books[0]);
+
+      // Mark poll as ended
+      poll.ended = true;
+
+      // Move the current book into the read history before replacing it
+      if (!club.booksRead) club.booksRead = [];
+      if (club.currentBook) {
+        club.booksRead.push({ title: club.currentBook.title, author: club.currentBook.author, cover: club.currentBook.cover || null, description: club.currentBook.description || "" });
+      }
+
+      // Set winner as currently reading
+      club.currentBook = { title: winner.title, author: winner.author, cover: winner.cover || null, description: winner.description || "" };
+
+      saveClub(club);
+      window.CLUB = club;
+
+      closeEndVoteModal();
+      renderCurrentBook(club);
+      renderBooksRead(club);
+      renderPoll(club);
+      document.getElementById("end-vote-btn").style.display = "none";
+    }
+
+    // ============================================
+    // POLL RENDER
+    // ============================================
     function renderPoll(club) {
       const polls     = club.polls || [];
       const active    = polls.length > 0 ? polls[polls.length - 1] : null;
@@ -2326,6 +2405,18 @@
 
       if (!active || !active.books || active.books.length === 0) {
         grid.innerHTML = '<p style="color:var(--ink-light);font-style:italic;padding:1.5rem 0;text-align:center;">No poll active yet.</p>';
+        if (subtitle) subtitle.style.display = "none";
+        hint.style.display      = "none";
+        actionRow.style.display = "none";
+        return;
+      }
+
+      if (active.ended) {
+        const winner = active.books.reduce((best, b) =>
+          (b.voteCount || 0) > (best.voteCount || 0) ? b : best, active.books[0]);
+        grid.innerHTML = `<p style="color:var(--ink-light);font-style:italic;padding:1.5rem 0;text-align:center;">
+          This poll has closed. ✦ <strong style="color:var(--ink);">${escapeHtml(winner.title)}</strong> was selected as the next read.
+        </p>`;
         if (subtitle) subtitle.style.display = "none";
         hint.style.display      = "none";
         actionRow.style.display = "none";
@@ -2377,6 +2468,7 @@
         return `
           <div class="poll-book" data-index="${i}" onclick="togglePollVote(${i})">
             <div class="poll-book-cover poll-book-cover-${i + 1}">
+              <button class="btn-poll-expand" onclick="toggleBookExpand(event,${i})" title="Expand description">+</button>
               ${coverHtml}
               <div class="poll-check">✓</div>
               <div class="poll-hover-overlay">
@@ -2388,6 +2480,7 @@
             <div class="poll-book-info">
               <div class="poll-book-name">${escapeHtml(b.title)}</div>
               <div class="poll-book-author-small">${escapeHtml(b.author)}</div>
+              <div class="poll-book-desc">${escapeHtml(b.description || "")}</div>
               ${voteBarHtml}
             </div>
           </div>`;
@@ -2403,6 +2496,15 @@
         hint.classList.remove("submitted");
         actionRow.style.display = "none";
       }
+    }
+
+    function toggleBookExpand(e, i) {
+      e.stopPropagation();
+      const card     = document.querySelectorAll(".poll-book")[i];
+      const expanded = card.classList.toggle("expanded");
+      const btn      = card.querySelector(".btn-poll-expand");
+      btn.textContent = expanded ? "×" : "+";
+      btn.classList.toggle("active", expanded);
     }
 
     function togglePollVote(index) {
@@ -2562,7 +2664,11 @@
     }
 
     function confirmPollBook() {
-      if (!pendingBook || pollChoices.length >= 4) return;
+      if (!pendingBook) return;
+      if (pollChoices.length >= 4) {
+        setSearchStatus("Poll already has the maximum number of options.", "error");
+        return;
+      }
       pollChoices.push(pendingBook);
       pendingBook = null;
       document.getElementById("book-results-list").style.display = "none";
@@ -2625,6 +2731,7 @@
 
       closePollModal();
       renderPoll(club);
+      document.getElementById("end-vote-btn").style.display = "inline-block";
     }
 
     function openPollModal() {
@@ -2687,16 +2794,32 @@
         </div>
         <p class="announcement-text">${latest.text}</p>`;
 
+      const currentUser = getCurrentUser();
+      const isManager   = currentUser && currentUser.username === club.managerUsername;
+
       const past = list.slice(1);
       if (past.length > 0) {
-        historyEl.innerHTML = past.map(a => `
+        historyEl.innerHTML = past.map((a, i) => {
+          const trashBtn = isManager
+            ? `<button class="btn-delete-ann" onclick="deleteAnnouncement(${i + 1})" title="Delete announcement">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
+                   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                   <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                 </svg>
+               </button>`
+            : "";
+          return `
           <div class="history-item">
             <div class="history-item-meta">
-              <span class="announcement-from" style="font-size:0.7rem;">${a.from}</span>
-              <span class="history-item-date">${a.date}</span>
+              <span style="display:flex;gap:0.8rem;align-items:center;">
+                <span class="announcement-from" style="font-size:0.7rem;">${escapeHtml(a.from)}</span>
+                <span class="history-item-date">${escapeHtml(a.date)}</span>
+              </span>
+              ${trashBtn}
             </div>
-            <p class="history-item-text">${a.text}</p>
-          </div>`).join("");
+            <p class="history-item-text">${escapeHtml(a.text)}</p>
+          </div>`;
+        }).join("");
         toggleWrap.style.display = "flex";
       } else {
         historyEl.innerHTML = "";
@@ -2704,6 +2827,14 @@
         historyEl.classList.remove("open");
         document.getElementById("toggle-history-btn").classList.remove("open");
       }
+    }
+
+    function deleteAnnouncement(idx) {
+      const club = window.CLUB;
+      club.announcements.splice(idx, 1);
+      saveClub(club);
+      window.CLUB = club;
+      renderAnnouncements(club);
     }
 
     let historyOpen = false;
@@ -2715,74 +2846,84 @@
       btn.classList.toggle("open", historyOpen);
     }
 
-    // ============================================
-    // STAR RATING — Fourth Wing
-    // ============================================
-    (function () {
-      const container = document.getElementById("fw-stars");
-      const label     = document.getElementById("fw-star-label");
-      const stars     = Array.from(container.querySelectorAll(".star"));
-      const labels    = ["Terrible", "Not for me", "It was ok", "Really good", "Loved it! ✦"];
-      let savedRating = 0;
 
-      function paint(n, cls) {
-        stars.forEach((s, i) => {
-          s.classList.remove("filled", "hovered");
-          if (i < n) s.classList.add(cls);
-        });
+    // ============================================
+    // MEETINGS
+    // ============================================
+    function renderMeetings(club) {
+      const list     = document.getElementById("meetings-list");
+      const meetings = club.meetings || [];
+      if (meetings.length === 0) {
+        list.innerHTML = '<div style="color:var(--ink-light);font-style:italic;padding:0.5rem 0;">No upcoming meetings scheduled.</div>';
+        return;
+      }
+      list.innerHTML = meetings.map(m => {
+        const dt    = new Date(m.datetime);
+        const day   = dt.getDate();
+        const month = dt.toLocaleString("en-US", { month: "short" }).toUpperCase();
+        const time  = dt.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+        return `
+          <div class="meeting-card">
+            <div class="meeting-date">
+              <span class="meeting-day">${day}</span>
+              <span class="meeting-month">${month}</span>
+            </div>
+            <div class="meeting-info-wrap">
+              <h3 class="meeting-title">${escapeHtml(m.title || "Meeting")}</h3>
+              <p class="meeting-info">${time}</p>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function openMeetingModal() {
+      document.getElementById("meeting-title-input").value    = "";
+      document.getElementById("meeting-datetime-input").value = "";
+      document.getElementById("meeting-title-count").textContent = "0 / 50";
+      document.getElementById("meeting-datetime-error").textContent = "";
+      document.getElementById("meeting-modal-overlay").classList.add("open");
+      document.getElementById("meeting-title-input").focus();
+    }
+
+    function closeMeetingModal() {
+      document.getElementById("meeting-modal-overlay").classList.remove("open");
+    }
+
+    function saveMeeting() {
+      const title    = document.getElementById("meeting-title-input").value.trim();
+      const datetime = document.getElementById("meeting-datetime-input").value;
+      const errEl    = document.getElementById("meeting-datetime-error");
+
+      errEl.textContent = "";
+      if (!datetime) {
+        errEl.textContent = "Please pick a date and time.";
+        return;
       }
 
-      stars.forEach(star => {
-        const v = +star.dataset.val;
+      const rawTitle = new URLSearchParams(window.location.search).get("clubTitle");
+      const club     = getClubByTitle(decodeURIComponent(rawTitle));
+      if (!club.meetings) club.meetings = [];
+      club.meetings.push({ title: title || "Meeting", datetime, createdAt: new Date().toISOString() });
+      saveClub(club);
+      window.CLUB = club;
+      closeMeetingModal();
+      renderMeetings(club);
+    }
 
-        star.addEventListener("mouseenter", () => {
-          if (savedRating) paint(savedRating, "filled"); // keep filled ones
-          paint(v, "hovered");
-          label.textContent = labels[v - 1];
-        });
-
-        star.addEventListener("mouseleave", () => {
-          paint(savedRating, "filled");
-          label.textContent = savedRating ? labels[savedRating - 1] : "Rate this book";
-        });
-
-        star.addEventListener("click", () => {
-          savedRating = v;
-          paint(v, "filled");
-          label.textContent = labels[v - 1];
-          // Save to localStorage
-          try { localStorage.setItem("fw_rating", v); } catch(e) {}
-        });
-      });
-
-      // Restore saved rating on load
-      try {
-        const saved = parseInt(localStorage.getItem("fw_rating") || "0");
-        if (saved > 0) {
-          savedRating = saved;
-          paint(saved, "filled");
-          label.textContent = labels[saved - 1];
-        }
-      } catch(e) {}
-    })();
-
-    // Set Fourth Wing date to current month/year
-    (function () {
-      const el = document.getElementById("fw-current-date");
-      if (!el) return;
-      const now = new Date();
-      el.textContent = now.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-    })();
+    document.getElementById("add-meeting-btn").addEventListener("click", openMeetingModal);
+    document.getElementById("meeting-modal-close").addEventListener("click", closeMeetingModal);
+    document.getElementById("meeting-modal-cancel").addEventListener("click", closeMeetingModal);
+    document.getElementById("meeting-modal-save").addEventListener("click", saveMeeting);
+    document.getElementById("meeting-modal-overlay").addEventListener("click", function (e) {
+      if (e.target === this) closeMeetingModal();
+    });
+    document.getElementById("meeting-title-input").addEventListener("input", function () {
+      document.getElementById("meeting-title-count").textContent = this.value.length + " / 50";
+    });
 
     // ============================================
-    // BOOKS SCROLL — reverse order (newest first)
+    // BOOKS READ SCROLL
     // ============================================
-    (function () {
-      const track = document.getElementById("books-read-track");
-      const cards = Array.from(track.children);
-      cards.reverse().forEach(c => track.appendChild(c));
-    })();
-
     function scrollBooks(dir) {
       const track = document.getElementById("books-read-track");
       track.scrollBy({ left: dir * 340, behavior: "smooth" });
