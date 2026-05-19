@@ -759,12 +759,15 @@
         }
 
         (club.meetings || []).forEach(m => {
+          // datetime-local stores as "YYYY-MM-DDTHH:MM"
+          const date = m.datetime ? m.datetime.slice(0, 10) : (m.date || '');
+          const time = m.datetime ? m.datetime.slice(11, 16) : (m.time || '');
           meetings.push({
-            id:       m.id || (clubName + '_' + m.date),
+            id:       clubName + '_' + (m.datetime || m.date || m.createdAt),
             name:     m.title || m.name || 'Meeting',
             clubName: clubName,
-            date:     m.date,       // "YYYY-MM-DD"
-            time:     m.time || '',
+            date,
+            time,
             location: m.location || '',
             colour:   colourMap[clubName],
           });

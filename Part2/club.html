@@ -603,7 +603,22 @@
       gap: 0.8rem;
       align-items: center;
       margin-bottom: 0.4rem;
+      justify-content: space-between;
     }
+
+    .btn-delete-ann {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 3px 5px;
+      border-radius: 6px;
+      color: #c0392b;
+      opacity: 0.55;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .btn-delete-ann:hover { opacity: 1; background: rgba(192,57,43,0.1); }
 
     .history-item-date {
       font-size: 0.72rem;
@@ -1148,11 +1163,27 @@
       display: block;
     }
 
-    .read-book-rating {
+    .read-star-row {
       display: flex;
-      gap: 2px;
-      font-size: 0.75rem;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: 1px;
+      margin-top: 0.35rem;
     }
+    .read-star {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.05rem;
+      padding: 0 1px;
+      color: #d4c5b8;
+      line-height: 1;
+      transition: color 0.1s;
+    }
+    .read-star.filled { color: #c9a46a; }
+    .read-star-row:hover .read-star { color: #d4c5b8; }
+    .read-star-row:hover .read-star:hover,
+    .read-star-row:hover .read-star:hover ~ .read-star { color: #c9a46a; }
 
     .read-book-meta { padding: 0 0.1rem; }
 
@@ -1817,20 +1848,9 @@
     <section class="glass-section">
       <div class="section-header">
         <h2 class="section-title">Upcoming Meetings</h2>
+        <button class="btn-add-announcement" id="add-meeting-btn" style="display:none;" title="Schedule meeting">+</button>
       </div>
-      <div class="meetings-list">
-        <div class="meeting-card">
-          <div class="meeting-date">
-            <span class="meeting-day">18</span>
-            <span class="meeting-month">MAY</span>
-          </div>
-          <div class="meeting-info-wrap">
-            <h3 class="meeting-title">Chapters 1–10 Discussion</h3>
-            <p class="meeting-info">20:00 · Zoom Meeting</p>
-          </div>
-          <button class="btn-vintage">Join</button>
-        </div>
-      </div>
+      <div class="meetings-list" id="meetings-list"></div>
     </section>
 
     <!-- MEMBERS -->
@@ -1882,6 +1902,41 @@
       <div class="end-vote-actions">
         <button class="btn-vintage" onclick="confirmEndVote()">I understand</button>
         <button class="btn-secondary" onclick="closeEndVoteModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD MEETING MODAL -->
+  <div class="modal-overlay" id="meeting-modal-overlay">
+    <div class="book-search-modal" style="max-width:420px;">
+      <button class="modal-close" id="meeting-modal-close">✕</button>
+      <h2 class="section-title" style="margin-bottom:1.6rem;">Schedule a Meeting</h2>
+
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+        <div>
+          <div class="poll-choices-label" style="margin-bottom:0.5rem;">
+            Title <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.78rem;">(optional)</span>
+          </div>
+          <input type="text" id="meeting-title-input" class="book-search-input"
+                 placeholder="e.g. Chapters 1–5 Discussion" maxlength="50"
+                 style="width:100%;box-sizing:border-box;">
+          <div style="display:flex;justify-content:flex-end;margin-top:0.3rem;">
+            <span class="compose-char-count" id="meeting-title-count">0 / 50</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="poll-choices-label" style="margin-bottom:0.5rem;">Date &amp; Time</div>
+          <input type="datetime-local" id="meeting-datetime-input" class="book-search-input"
+                 style="width:100%;box-sizing:border-box;">
+          <span id="meeting-datetime-error"
+                style="font-size:0.82rem;color:#c0392b;display:block;min-height:1.1em;margin-top:0.3rem;"></span>
+        </div>
+      </div>
+
+      <div class="poll-modal-footer">
+        <button class="btn-secondary" id="meeting-modal-cancel">Cancel</button>
+        <button class="btn-save-announcement" id="meeting-modal-save" style="background:#8b5e3c;">Schedule ✦</button>
       </div>
     </div>
   </div>
@@ -1984,11 +2039,8 @@
       renderCurrentBook(club);
       renderBooksRead(club);
 
-      // Meetings — empty state for new clubs
-      if (!club.meetings || club.meetings.length === 0) {
-        document.querySelector(".meetings-list").innerHTML =
-          '<div style="color:var(--ink-light);font-style:italic;padding:0.5rem 0;">No upcoming meetings scheduled.</div>';
-      }
+      // Meetings
+      renderMeetings(club);
 
       // Build members array from bookies_users
       const allUsers = getUsers();
@@ -2074,6 +2126,7 @@
           addAnnouncementBtn.style.display = "flex";
 
           document.getElementById("add-poll-btn").style.display = "flex";
+          document.getElementById("add-meeting-btn").style.display = "flex";
 
           // Show "End the vote!" only when there is an active, non-ended poll
           const activePoll = (club.polls || []).slice(-1)[0];
@@ -2252,7 +2305,13 @@
         track.innerHTML = '<p style="color:var(--ink-light);font-style:italic;padding:0.5rem 0.2rem;">No books read yet.</p>';
         return;
       }
-      track.innerHTML = books.map(b => {
+      const currentUser = getCurrentUser();
+      track.innerHTML = [...books].reverse().map((b, revIdx) => {
+        const originalIdx = books.length - 1 - revIdx;
+        const userRating  = (b.ratings && currentUser) ? (b.ratings[currentUser.username] || 0) : 0;
+        const starsHtml   = [5,4,3,2,1].map(s =>
+          `<button class="read-star${s <= userRating ? ' filled' : ''}" onclick="rateBook(${originalIdx},${s})">★</button>`
+        ).join("");
         const coverHtml = b.cover
           ? `<img src="${escapeHtml(b.cover)}" alt=""
                style="width:148px;height:210px;object-fit:cover;display:block;"
@@ -2265,9 +2324,22 @@
             <div class="read-book-meta">
               <div class="read-book-title">${escapeHtml(b.title)}</div>
               <div class="read-book-author">${escapeHtml(b.author)}</div>
+              <div class="read-star-row">${starsHtml}</div>
             </div>
           </div>`;
       }).join("");
+    }
+
+    function rateBook(originalIdx, val) {
+      const user = getCurrentUser();
+      if (!user) return;
+      const club = window.CLUB;
+      if (!club.booksRead || !club.booksRead[originalIdx]) return;
+      if (!club.booksRead[originalIdx].ratings) club.booksRead[originalIdx].ratings = {};
+      club.booksRead[originalIdx].ratings[user.username] = val;
+      saveClub(club);
+      window.CLUB = club;
+      renderBooksRead(club);
     }
 
     // ============================================
@@ -2592,7 +2664,11 @@
     }
 
     function confirmPollBook() {
-      if (!pendingBook || pollChoices.length >= 4) return;
+      if (!pendingBook) return;
+      if (pollChoices.length >= 4) {
+        setSearchStatus("Poll already has the maximum number of options.", "error");
+        return;
+      }
       pollChoices.push(pendingBook);
       pendingBook = null;
       document.getElementById("book-results-list").style.display = "none";
@@ -2718,16 +2794,32 @@
         </div>
         <p class="announcement-text">${latest.text}</p>`;
 
+      const currentUser = getCurrentUser();
+      const isManager   = currentUser && currentUser.username === club.managerUsername;
+
       const past = list.slice(1);
       if (past.length > 0) {
-        historyEl.innerHTML = past.map(a => `
+        historyEl.innerHTML = past.map((a, i) => {
+          const trashBtn = isManager
+            ? `<button class="btn-delete-ann" onclick="deleteAnnouncement(${i + 1})" title="Delete announcement">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
+                   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                   <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                 </svg>
+               </button>`
+            : "";
+          return `
           <div class="history-item">
             <div class="history-item-meta">
-              <span class="announcement-from" style="font-size:0.7rem;">${a.from}</span>
-              <span class="history-item-date">${a.date}</span>
+              <span style="display:flex;gap:0.8rem;align-items:center;">
+                <span class="announcement-from" style="font-size:0.7rem;">${escapeHtml(a.from)}</span>
+                <span class="history-item-date">${escapeHtml(a.date)}</span>
+              </span>
+              ${trashBtn}
             </div>
-            <p class="history-item-text">${a.text}</p>
-          </div>`).join("");
+            <p class="history-item-text">${escapeHtml(a.text)}</p>
+          </div>`;
+        }).join("");
         toggleWrap.style.display = "flex";
       } else {
         historyEl.innerHTML = "";
@@ -2735,6 +2827,14 @@
         historyEl.classList.remove("open");
         document.getElementById("toggle-history-btn").classList.remove("open");
       }
+    }
+
+    function deleteAnnouncement(idx) {
+      const club = window.CLUB;
+      club.announcements.splice(idx, 1);
+      saveClub(club);
+      window.CLUB = club;
+      renderAnnouncements(club);
     }
 
     let historyOpen = false;
@@ -2746,6 +2846,80 @@
       btn.classList.toggle("open", historyOpen);
     }
 
+
+    // ============================================
+    // MEETINGS
+    // ============================================
+    function renderMeetings(club) {
+      const list     = document.getElementById("meetings-list");
+      const meetings = club.meetings || [];
+      if (meetings.length === 0) {
+        list.innerHTML = '<div style="color:var(--ink-light);font-style:italic;padding:0.5rem 0;">No upcoming meetings scheduled.</div>';
+        return;
+      }
+      list.innerHTML = meetings.map(m => {
+        const dt    = new Date(m.datetime);
+        const day   = dt.getDate();
+        const month = dt.toLocaleString("en-US", { month: "short" }).toUpperCase();
+        const time  = dt.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+        return `
+          <div class="meeting-card">
+            <div class="meeting-date">
+              <span class="meeting-day">${day}</span>
+              <span class="meeting-month">${month}</span>
+            </div>
+            <div class="meeting-info-wrap">
+              <h3 class="meeting-title">${escapeHtml(m.title || "Meeting")}</h3>
+              <p class="meeting-info">${time}</p>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function openMeetingModal() {
+      document.getElementById("meeting-title-input").value    = "";
+      document.getElementById("meeting-datetime-input").value = "";
+      document.getElementById("meeting-title-count").textContent = "0 / 50";
+      document.getElementById("meeting-datetime-error").textContent = "";
+      document.getElementById("meeting-modal-overlay").classList.add("open");
+      document.getElementById("meeting-title-input").focus();
+    }
+
+    function closeMeetingModal() {
+      document.getElementById("meeting-modal-overlay").classList.remove("open");
+    }
+
+    function saveMeeting() {
+      const title    = document.getElementById("meeting-title-input").value.trim();
+      const datetime = document.getElementById("meeting-datetime-input").value;
+      const errEl    = document.getElementById("meeting-datetime-error");
+
+      errEl.textContent = "";
+      if (!datetime) {
+        errEl.textContent = "Please pick a date and time.";
+        return;
+      }
+
+      const rawTitle = new URLSearchParams(window.location.search).get("clubTitle");
+      const club     = getClubByTitle(decodeURIComponent(rawTitle));
+      if (!club.meetings) club.meetings = [];
+      club.meetings.push({ title: title || "Meeting", datetime, createdAt: new Date().toISOString() });
+      saveClub(club);
+      window.CLUB = club;
+      closeMeetingModal();
+      renderMeetings(club);
+    }
+
+    document.getElementById("add-meeting-btn").addEventListener("click", openMeetingModal);
+    document.getElementById("meeting-modal-close").addEventListener("click", closeMeetingModal);
+    document.getElementById("meeting-modal-cancel").addEventListener("click", closeMeetingModal);
+    document.getElementById("meeting-modal-save").addEventListener("click", saveMeeting);
+    document.getElementById("meeting-modal-overlay").addEventListener("click", function (e) {
+      if (e.target === this) closeMeetingModal();
+    });
+    document.getElementById("meeting-title-input").addEventListener("input", function () {
+      document.getElementById("meeting-title-count").textContent = this.value.length + " / 50";
+    });
 
     // ============================================
     // BOOKS READ SCROLL
