@@ -811,12 +811,15 @@
         return;
       }
       const currentUser = getCurrentUser();
+      const isMember    = currentUser && (club.members || []).includes(currentUser.username);
       track.innerHTML = [...books].reverse().map((b, revIdx) => {
         const originalIdx = books.length - 1 - revIdx;
         const userRating  = (b.ratings && currentUser) ? (b.ratings[currentUser.username] || 0) : 0;
-        const starsHtml   = [5,4,3,2,1].map(s =>
-          `<button class="read-star${s <= userRating ? ' filled' : ''}" onclick="rateBook(${originalIdx},${s})">★</button>`
-        ).join("");
+        const starsHtml   = isMember
+          ? [5,4,3,2,1].map(s =>
+              `<button class="read-star${s <= userRating ? ' filled' : ''}" onclick="rateBook(${originalIdx},${s})">★</button>`
+            ).join("")
+          : "";
         const coverHtml = b.cover
           ? `<img src="${escapeHtml(b.cover)}" alt=""
                style="width:148px;height:210px;object-fit:cover;display:block;"
@@ -839,6 +842,7 @@
       const user = getCurrentUser();
       if (!user) return;
       const club = window.CLUB;
+      if (!(club.members || []).includes(user.username)) return;
       if (!club.booksRead || !club.booksRead[originalIdx]) return;
       if (!club.booksRead[originalIdx].ratings) club.booksRead[originalIdx].ratings = {};
       club.booksRead[originalIdx].ratings[user.username] = val;
@@ -950,6 +954,7 @@
 
       const currentUser = getCurrentUser();
       const userVoted   = currentUser && books.some(b => (b.votedBy || []).includes(currentUser.username));
+      const isMember    = currentUser && (club.members || []).includes(currentUser.username);
       if (userVoted) pollSubmitted = true;
 
       const totalVotes = books.reduce((sum, b) => sum + (b.voteCount || 0), 0);
@@ -974,11 +979,11 @@
           : "";
 
         return `
-          <div class="poll-book" data-index="${i}" onclick="togglePollVote(${i})">
+          <div class="poll-book" data-index="${i}"${isMember ? ' onclick="togglePollVote(' + i + ')"' : ''}>
             <div class="poll-book-cover poll-book-cover-${i + 1}">
               <button class="btn-poll-expand" onclick="toggleBookExpand(event,${i})" title="Expand description">+</button>
               ${coverHtml}
-              <div class="poll-check">✓</div>
+              ${isMember ? '<div class="poll-check">✓</div>' : ''}
               <div class="poll-hover-overlay">
                 <div class="poll-hover-title">${escapeHtml(b.title)}</div>
                 <div class="poll-hover-author">${escapeHtml(b.author)}</div>
@@ -995,7 +1000,11 @@
       }).join("");
 
       hint.style.display = "";
-      if (userVoted) {
+      if (!isMember) {
+        hint.textContent = "Join the club to participate in votes.";
+        hint.classList.remove("submitted");
+        actionRow.style.display = "none";
+      } else if (userVoted) {
         hint.textContent = "✦ Your vote has been submitted. Thank you!";
         hint.classList.add("submitted");
         actionRow.style.display = "none";
@@ -1017,6 +1026,8 @@
 
     function togglePollVote(index) {
       if (pollSubmitted) return;
+      const currentUser = getCurrentUser();
+      if (!currentUser || !(window.CLUB.members || []).includes(currentUser.username)) return;
       const books = document.querySelectorAll(".poll-book");
       const book  = books[index];
 
@@ -1047,14 +1058,16 @@
     // Persists the vote to localStorage, then re-renders to show vote bars.
     function submitPollVote() {
       if (pollSelected.size === 0 || pollSubmitted) return;
-      pollSubmitted = true;
 
       const rawTitle    = new URLSearchParams(window.location.search).get("clubTitle");
       const club        = getClubByTitle(decodeURIComponent(rawTitle));
       if (!club || !club.polls || club.polls.length === 0) return;
 
-      const active      = club.polls[club.polls.length - 1];
       const currentUser = getCurrentUser();
+      if (!currentUser || !(club.members || []).includes(currentUser.username)) return;
+
+      pollSubmitted = true;
+      const active      = club.polls[club.polls.length - 1];
 
       pollSelected.forEach(function (idx) {
         if (!active.books[idx]) return;
