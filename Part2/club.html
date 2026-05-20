@@ -426,6 +426,15 @@
           <span id="meeting-datetime-error"
                 style="font-size:0.82rem;color:#c0392b;display:block;min-height:1.1em;margin-top:0.3rem;"></span>
         </div>
+
+        <div>
+          <div class="poll-choices-label" style="margin-bottom:0.5rem;">
+            Location <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.78rem;">(optional)</span>
+          </div>
+          <input type="text" id="meeting-location-input" class="book-search-input"
+                 placeholder="e.g. Zoom, Room 204, Library" maxlength="80"
+                 style="width:100%;box-sizing:border-box;">
+        </div>
       </div>
 
       <div class="poll-modal-footer">
@@ -1399,7 +1408,7 @@
             </div>
             <div class="meeting-info-wrap">
               <h3 class="meeting-title">${escapeHtml(m.title || "Meeting")}</h3>
-              <p class="meeting-info">${time}</p>
+              <p class="meeting-info">${time}${m.location ? ` &nbsp;·&nbsp; 📍 ${escapeHtml(m.location)}` : ""}</p>
             </div>
             ${managerBtns}
           </div>`;
@@ -1420,7 +1429,8 @@
       editingMeetingIdx = idx;
       const m = window.CLUB.meetings[idx];
 
-      document.getElementById("meeting-title-input").value = m.title || "";
+      document.getElementById("meeting-title-input").value    = m.title || "";
+      document.getElementById("meeting-location-input").value = m.location || "";
       document.getElementById("meeting-title-count").textContent = (m.title || "").length + " / 50";
       document.getElementById("meeting-datetime-error").textContent = "";
 
@@ -1440,6 +1450,7 @@
       editingMeetingIdx = null;
       document.getElementById("meeting-title-input").value    = "";
       document.getElementById("meeting-datetime-input").value = "";
+      document.getElementById("meeting-location-input").value = "";
       document.getElementById("meeting-title-count").textContent = "0 / 50";
       document.getElementById("meeting-datetime-error").textContent = "";
 
@@ -1458,6 +1469,7 @@
     function saveMeeting() {
       const title    = document.getElementById("meeting-title-input").value.trim();
       const datetime = document.getElementById("meeting-datetime-input").value;
+      const location = document.getElementById("meeting-location-input").value.trim();
       const errEl    = document.getElementById("meeting-datetime-error");
 
       errEl.textContent = "";
@@ -1475,9 +1487,9 @@
       if (!club.meetings) club.meetings = [];
 
       if (editingMeetingIdx !== null) {
-        club.meetings[editingMeetingIdx] = { title: title || "Meeting", datetime, createdAt: club.meetings[editingMeetingIdx].createdAt };
+        club.meetings[editingMeetingIdx] = { title: title || "Meeting", datetime, location, createdAt: club.meetings[editingMeetingIdx].createdAt };
       } else {
-        club.meetings.push({ title: title || "Meeting", datetime, createdAt: new Date().toISOString() });
+        club.meetings.push({ title: title || "Meeting", datetime, location, createdAt: new Date().toISOString() });
       }
 
       saveClub(club);
