@@ -2,11 +2,11 @@
 // COLOUR MAP - up to 5 clubs get distinct hues
 // ============================================
 const CLUB_COLOURS = [
-  { bg: 'rgba(201,169,154,0.20)', dot: '#c9a99a', text: '#8b5e3c', accent: '#c9a99a' },
-  { bg: 'rgba(130,170,130,0.20)', dot: '#7a9170', text: '#3d6140', accent: '#7a9170' },
-  { bg: 'rgba(143,163,177,0.20)', dot: '#8fa3b1', text: '#3a5f72', accent: '#8fa3b1' },
-  { bg: 'rgba(181,152,200,0.20)', dot: '#a080c0', text: '#6b4d8a', accent: '#a080c0' },
-  { bg: 'rgba(200,175,110,0.20)', dot: '#c8a050', text: '#8a6820', accent: '#c8a050' },
+  { bg: 'rgba(139,80,40,0.18)',  dot: '#8b5028', text: '#6b3510', accent: '#8b5028' },  // dark warm brown
+  { bg: 'rgba(45,110,65,0.18)',  dot: '#2d6e41', text: '#1a4d2a', accent: '#2d6e41' },  // forest green
+  { bg: 'rgba(90,55,140,0.18)',  dot: '#5a3787', text: '#3d2060', accent: '#5a3787' },  // deep purple
+  { bg: 'rgba(120,30,50,0.18)',  dot: '#78202e', text: '#55111e', accent: '#78202e' },  // burgundy
+  { bg: 'rgba(95,100,108,0.18)', dot: '#5f646c', text: '#3a3e44', accent: '#5f646c' },  // warm grey
 ];
 
 // ============================================
@@ -43,13 +43,14 @@ function loadMeetings() {
       const date = m.datetime ? m.datetime.slice(0, 10) : (m.date || '');
       const time = m.datetime ? m.datetime.slice(11, 16) : (m.time || '');
       meetings.push({
-        id:       clubName + '_' + (m.datetime || m.date || m.createdAt),
-        name:     m.title || m.name || 'Meeting',
-        clubName: clubName,
+        id:          clubName + '_' + (m.datetime || m.date || m.createdAt),
+        name:        m.title || m.name || 'Meeting',
+        clubName:    clubName,
         date,
         time,
-        location: m.location || '',
-        colour:   colourMap[clubName],
+        location:    m.location || '',
+        description: m.description || m.desc || '',
+        colour:      colourMap[clubName],
       });
     });
   });
@@ -160,24 +161,48 @@ function renderGrid() {
                   && today.getDate()     === day);
     const meetings = byDay[day] || [];
     const hasEvents = meetings.length > 0;
+    const manyEvents = meetings.length >= 3;
 
-    const pills = meetings.slice(0, 3).map((m) => {
-      return `<div class="cal-event-pill"
-           style="background:${m.colour.bg};color:${m.colour.text};"
-           onclick="openEventModal(event,'${escapeAttr(m.id)}')"
-           onmouseenter="showPillTooltip(event,'${escapeAttr(m.id)}')"
-           onmouseleave="hidePillTooltip()"
-      >${escapeHtml(m.name)}</div>`;
-    }).join('');
+    let eventsHtml;
 
-    const more = meetings.length > 3
-      ? `<div style="font-size:0.6rem;color:var(--ink-light);padding:1px 4px;">+${meetings.length - 3} more</div>`
-      : '';
+    if (manyEvents) {
+      // Compact mode: coloured dot + short name, up to 3, then overflow dots
+      const compact = meetings.slice(0, 3).map((m) => {
+        const idx = allMeetings.indexOf(m);
+        return `<div class="cal-event-pill cal-pill-compact"
+             style="background:${m.colour.bg};color:${m.colour.text};"
+             onclick="openEventModalByIndex(event,${idx})"
+             onmouseenter="showPillTooltipByIndex(event,${idx})"
+             onmouseleave="hidePillTooltip()"
+        ><span class="pill-dot" style="background:${m.colour.dot};"></span>${escapeHtml(m.name)}</div>`;
+      }).join('');
+
+      const overflow = meetings.length > 3
+        ? `<div class="cal-overflow-dots">${
+            meetings.slice(3).map(m =>
+              `<span class="cal-overflow-dot" style="background:${m.colour.dot};" title="${escapeHtml(m.name)}"></span>`
+            ).join('')
+          }</div>`
+        : '';
+
+      eventsHtml = compact + overflow;
+    } else {
+      // Normal mode: full pills
+      eventsHtml = meetings.map((m) => {
+        const idx = allMeetings.indexOf(m);
+        return `<div class="cal-event-pill"
+             style="background:${m.colour.bg};color:${m.colour.text};"
+             onclick="openEventModalByIndex(event,${idx})"
+             onmouseenter="showPillTooltipByIndex(event,${idx})"
+             onmouseleave="hidePillTooltip()"
+        >${escapeHtml(m.name)}</div>`;
+      }).join('');
+    }
 
     html += `
-      <div class="cal-cell ${isToday ? 'today' : ''} ${hasEvents ? 'has-events' : ''}">
+      <div class="cal-cell ${isToday ? 'today' : ''} ${hasEvents ? 'has-events' : ''} ${manyEvents ? 'many-events' : ''}">
         <div class="cal-day-num">${day}</div>
-        <div class="cal-events">${pills}${more}</div>
+        <div class="cal-events">${eventsHtml}</div>
       </div>`;
   }
 
@@ -190,43 +215,41 @@ function renderGrid() {
 function renderList() {
   const container = document.getElementById('list-container');
 
-  // Group by month
-  const byMonth = {};
-  allMeetings.forEach(m => {
+  // Filter to the currently selected month (same as grid)
+  const monthMeetings = allMeetings.filter(m => {
     const d = new Date(m.date);
-    const key = d.getFullYear() + '-' + String(d.getMonth()).padStart(2,'0');
-    if (!byMonth[key]) byMonth[key] = { label: d.toLocaleDateString('en-US',{month:'long',year:'numeric'}), items: [] };
-    byMonth[key].items.push(m);
+    return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
   });
 
-  const keys = Object.keys(byMonth).sort();
-
-  if (keys.length === 0) {
-    container.innerHTML = `<div class="empty-state">No upcoming meetings scheduled.</div>`;
+  if (monthMeetings.length === 0) {
+    container.innerHTML = `<div class="empty-state">No meetings scheduled for this month.</div>`;
     return;
   }
 
-  // Show current month first, then future
-  const now = new Date();
-  const nowKey = now.getFullYear() + '-' + String(now.getMonth()).padStart(2,'0');
+  const now   = new Date();
+  const todayStr = now.getFullYear() + '-'
+    + String(now.getMonth() + 1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0');
 
-  const sortedKeys = keys.filter(k => k >= nowKey);
-  const pastKeys   = keys.filter(k => k < nowKey);
+  const upcoming = monthMeetings.filter(m => m.date >= todayStr);
+  const past     = monthMeetings.filter(m => m.date <  todayStr);
+
+  const monthLabel = new Date(currentYear, currentMonth, 1)
+    .toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   let html = '';
 
-  sortedKeys.forEach(key => {
-    html += buildListSection(byMonth[key]);
-  });
+  if (upcoming.length > 0) {
+    html += buildListSection({ label: monthLabel, items: upcoming }, false);
+  }
 
-  if (pastKeys.length > 0) {
-    html += `
-      <div style="text-align:center;margin:1.5rem 0;">
+  if (past.length > 0) {
+    if (upcoming.length > 0) {
+      html += `<div style="text-align:center;margin:1.5rem 0;">
         <span style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-light);">Past Meetings</span>
       </div>`;
-    pastKeys.reverse().forEach(key => {
-      html += buildListSection(byMonth[key], true);
-    });
+    }
+    html += buildListSection({ label: upcoming.length === 0 ? monthLabel : '', items: past }, true);
   }
 
   container.innerHTML = html;
@@ -241,10 +264,10 @@ function buildListSection(section, isPast = false) {
 
     return `
       <div class="meeting-item" style="opacity:${isPast ? '0.62' : '1'}">
-        <div class="meeting-item-inner">
-          <div class="meeting-accent" style="background:${m.colour.accent}"></div>
-          <div class="meeting-date-block">
-            <div class="meeting-date-day">${day}</div>
+        <div class="meeting-item-inner" style="--meeting-bg:${m.colour.bg};">
+          <div class="meeting-accent" style="background:${m.colour.accent};width:7px;"></div>
+          <div class="meeting-date-block" style="border-right-color:${m.colour.accent}30;">
+            <div class="meeting-date-day" style="color:${m.colour.text};">${day}</div>
             <div class="meeting-date-mon">${mon}</div>
           </div>
           <div style="flex:1;min-width:0;">
@@ -253,7 +276,7 @@ function buildListSection(section, isPast = false) {
                 <div class="meeting-name">${escapeHtml(m.name)}</div>
                 <div class="meeting-meta-row">
                   <span class="meeting-club-badge"
-                        style="background:${m.colour.bg};color:${m.colour.text};"
+                        style="background:${m.colour.dot};color:#fff;font-weight:600;"
                   >${escapeHtml(m.clubName)}</span>
                   ${m.time ? `<span class="meeting-time">🕐 ${escapeHtml(m.time)}</span>` : ''}
                   ${m.location ? `<span class="meeting-time">📍 ${escapeHtml(m.location)}</span>` : ''}
@@ -304,13 +327,24 @@ function toggleDetail(evt, id) {
 }
 
 // ============================================
-// EVENT MODAL (calendar grid click)
+// EVENT MODAL (calendar grid click) — by index
 // ============================================
+function openEventModalByIndex(evt, idx) {
+  evt.stopPropagation();
+  const m = allMeetings[idx];
+  if (!m) return;
+  _openModal(m);
+}
+
+// kept for any other callers
 function openEventModal(evt, id) {
   evt.stopPropagation();
   const m = allMeetings.find(x => x.id === id);
   if (!m) return;
+  _openModal(m);
+}
 
+function _openModal(m) {
   const d = new Date(m.date);
   const fullDate = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -319,6 +353,15 @@ function openEventModal(evt, id) {
   document.getElementById('modal-time').textContent = m.time || 'Time not specified';
   document.getElementById('modal-location').textContent = m.location || 'Location not specified';
   document.getElementById('modal-club').textContent = m.clubName;
+
+  const descRow = document.getElementById('modal-desc-row');
+  const descEl  = document.getElementById('modal-desc');
+  if (m.description) {
+    descEl.textContent = m.description;
+    descRow.style.display = 'flex';
+  } else {
+    descRow.style.display = 'none';
+  }
 
   document.getElementById('event-modal-overlay').classList.add('open');
 }
@@ -348,10 +391,19 @@ function escapeAttr(str) {
 const _tt = document.getElementById('pill-tooltip-global');
 let _ttTimer = null;
 
+function showPillTooltipByIndex(evt, idx) {
+  const m = allMeetings[idx];
+  if (!m) return;
+  _showTooltip(evt, m);
+}
+
 function showPillTooltip(evt, id) {
   const m = allMeetings.find(x => x.id === id);
   if (!m) return;
+  _showTooltip(evt, m);
+}
 
+function _showTooltip(evt, m) {
   const timeRow = m.time     ? `<div class="tt-row"><span>🕐</span><span>${m.time}</span></div>` : '';
   const locRow  = m.location ? `<div class="tt-row"><span>📍</span><span>${m.location}</span></div>` : '';
 
@@ -360,13 +412,11 @@ function showPillTooltip(evt, id) {
     <div class="tt-name">${m.name}</div>
     ${timeRow}${locRow}`;
 
-  // Position above the pill
   const rect = evt.currentTarget.getBoundingClientRect();
   const ttW  = 210;
   let left   = rect.left + rect.width / 2 - ttW / 2;
-  // clamp to viewport
   left = Math.max(8, Math.min(left, window.innerWidth - ttW - 8));
-  const top  = rect.top - 8; // will be shifted up via transform
+  const top  = rect.top - 8;
 
   _tt.style.left      = left + 'px';
   _tt.style.top       = top  + 'px';
