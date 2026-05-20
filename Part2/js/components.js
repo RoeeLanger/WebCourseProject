@@ -85,18 +85,12 @@ function initAppHeader(navLinks, logoHref) {
   var searchDropdown = document.getElementById('searchDropdown');
   var allClubs = getClubs();
 
-  searchInput.addEventListener('input', function () {
-    var term = searchInput.value.trim().toLowerCase();
+  function renderSuggestions(term) {
     searchDropdown.innerHTML = '';
-
-    if (!term) {
-      searchDropdown.hidden = true;
-      return;
-    }
-
-    var matches = allClubs.filter(function (c) {
-      return (c.clubTitle || '').toLowerCase().includes(term);
-    });
+    var matches = term
+      ? allClubs.filter(function (c) { return (c.clubTitle || '').toLowerCase().includes(term); })
+      : allClubs.slice();
+    matches = matches.slice(0, 5);
 
     if (matches.length === 0) {
       searchDropdown.innerHTML = '<li class="search-no-results">No clubs found</li>';
@@ -111,8 +105,15 @@ function initAppHeader(navLinks, logoHref) {
         searchDropdown.appendChild(li);
       });
     }
-
     searchDropdown.hidden = false;
+  }
+
+  searchInput.addEventListener('focus', function () {
+    renderSuggestions(searchInput.value.trim().toLowerCase());
+  });
+
+  searchInput.addEventListener('input', function () {
+    renderSuggestions(searchInput.value.trim().toLowerCase());
   });
 
   document.addEventListener('click', function (e) {

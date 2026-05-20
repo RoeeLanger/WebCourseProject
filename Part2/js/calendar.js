@@ -256,6 +256,7 @@ function buildListSection(section, isPast = false) {
                         style="background:${m.colour.bg};color:${m.colour.text};"
                   >${escapeHtml(m.clubName)}</span>
                   ${m.time ? `<span class="meeting-time">🕐 ${escapeHtml(m.time)}</span>` : ''}
+                  ${m.location ? `<span class="meeting-time">📍 ${escapeHtml(m.location)}</span>` : ''}
                 </div>
               </div>
               <button class="meeting-expand-btn" id="expand-${escapeAttr(m.id)}"
