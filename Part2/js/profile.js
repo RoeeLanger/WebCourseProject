@@ -1,54 +1,5 @@
 const currentUser = getCurrentUser();
-
-// ===== CLUB SEARCH =====
-
 const clubs = getClubs();
-const clubSearchInput = document.getElementById("clubSearch");
-const searchDropdown = document.getElementById("searchDropdown");
-
-clubSearchInput.addEventListener("input", () => {
-  const term = clubSearchInput.value.trim().toLowerCase();
-  searchDropdown.innerHTML = "";
-
-  if (!term) {
-    searchDropdown.hidden = true;
-    return;
-  }
-
-  const matches = clubs.filter((c) =>
-    (c.clubTitle || "").toLowerCase().includes(term)
-  );
-
-  if (matches.length === 0) {
-    searchDropdown.innerHTML =
-      `<li class="search-no-results">No clubs found</li>`;
-  } else {
-    matches.forEach((club) => {
-      const li = document.createElement("li");
-      li.className = "search-result-item";
-      li.textContent = club.clubTitle;
-      li.addEventListener("click", () => {
-        window.location.href =
-          `club.html?clubTitle=${encodeURIComponent(club.clubTitle)}`;
-      });
-      searchDropdown.appendChild(li);
-    });
-  }
-
-  searchDropdown.hidden = false;
-});
-
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".header-search")) {
-    searchDropdown.hidden = true;
-  }
-});
-
-document.getElementById("logout-btn").addEventListener("click", (e) => {
-  e.preventDefault();
-  localStorage.removeItem("bookies_session");
-  window.location.href = "login.html";
-});
 
 // ===== ELEMENTS =====
 
