@@ -161,13 +161,13 @@ function renderGrid() {
                   && today.getDate()     === day);
     const meetings = byDay[day] || [];
     const hasEvents = meetings.length > 0;
-    const manyEvents = meetings.length >= 3;
+    const manyEvents = meetings.length >= 4;
 
     let eventsHtml;
 
     if (manyEvents) {
-      // Compact mode: coloured dot + short name, up to 3, then overflow dots
-      const compact = meetings.slice(0, 3).map((m) => {
+      // Compact mode: coloured dot + short name, up to 4, then overflow dots
+      const compact = meetings.slice(0, 4).map((m) => {
         const idx = allMeetings.indexOf(m);
         return `<div class="cal-event-pill cal-pill-compact"
              style="background:${m.colour.bg};color:${m.colour.text};"
@@ -177,9 +177,9 @@ function renderGrid() {
         ><span class="pill-dot" style="background:${m.colour.dot};"></span>${escapeHtml(m.name)}</div>`;
       }).join('');
 
-      const overflow = meetings.length > 3
+      const overflow = meetings.length > 4
         ? `<div class="cal-overflow-dots">${
-            meetings.slice(3).map(m =>
+            meetings.slice(4).map(m =>
               `<span class="cal-overflow-dot" style="background:${m.colour.dot};" title="${escapeHtml(m.name)}"></span>`
             ).join('')
           }</div>`
@@ -187,8 +187,8 @@ function renderGrid() {
 
       eventsHtml = compact + overflow;
     } else {
-      // Normal mode: full pills
-      eventsHtml = meetings.map((m) => {
+      // Normal mode: full pills (up to 3)
+      eventsHtml = meetings.slice(0, 3).map((m) => {
         const idx = allMeetings.indexOf(m);
         return `<div class="cal-event-pill"
              style="background:${m.colour.bg};color:${m.colour.text};"
@@ -279,7 +279,6 @@ function buildListSection(section, isPast = false) {
                         style="background:${m.colour.dot};color:#fff;font-weight:600;"
                   >${escapeHtml(m.clubName)}</span>
                   ${m.time ? `<span class="meeting-time">🕐 ${escapeHtml(m.time)}</span>` : ''}
-                  ${m.location ? `<span class="meeting-time">📍 ${escapeHtml(m.location)}</span>` : ''}
                 </div>
               </div>
               <button class="meeting-expand-btn" id="expand-${escapeAttr(m.id)}"
