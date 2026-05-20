@@ -173,11 +173,13 @@
       meetings: [
         {
           title: "Chapters 1–15 Discussion",
+          location: "Zoom",
           datetime: "2026-06-10T20:00",
           createdAt: "2026-05-18T10:00:00.000Z"
         },
         {
           title: "Monthly Check-in",
+          location: "Zoom",
           datetime: "2026-07-05T19:00",
           createdAt: "2026-05-18T10:01:00.000Z"
         }
@@ -302,6 +304,7 @@
       meetings: [
         {
           title: "Pride & Prejudice — Chapters 1–20",
+          location: "Mileva bar",
           datetime: "2026-06-03T19:30",
           createdAt: "2026-05-15T08:30:00.000Z"
         }
