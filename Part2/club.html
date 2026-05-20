@@ -585,8 +585,17 @@
         }
 
         if (!isMember) {
+          const isFull = club.members.length >= club.maxMembers;
           joinBtn.style.display = "inline-block";
+          if (isFull) {
+            joinBtn.textContent = "Club Full";
+            joinBtn.disabled = true;
+          } else {
           joinBtn.addEventListener("click", function () {
+            if (club.members.length >= club.maxMembers) {
+              alert("This club is full and cannot accept new members.");
+              return;
+            }
             club.members.push(currentUser.username);
             saveClub(club);
             if (!currentUser.clubs.includes(club.clubTitle)) {
@@ -595,6 +604,7 @@
             }
             window.location.reload();
           });
+          }
         } else if (!isManager) {
           joinBtn.textContent = "Leave Club";
           joinBtn.style.display = "inline-block";
