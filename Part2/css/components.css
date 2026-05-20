@@ -73,14 +73,14 @@
 ============================================ */
 
 .landing-footer {
-  padding: 1rem 2rem;
-  border-top: 1px solid rgba(120, 90, 70, 0.18);
+  padding: 1.5rem;
   text-align: center;
+  background: #1d1815;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .landing-footer p {
   font-family: var(--font-body, 'Lora', 'Times New Roman', serif);
-  font-size: 0.78rem;
-  color: var(--ink-light, #6b5f59);
-  letter-spacing: 0.04em;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
 }
