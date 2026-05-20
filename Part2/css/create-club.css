@@ -1,0 +1,546 @@
+:root {
+  --cream:        #f5f0e8;
+  --parchment:    #ede6d6;
+  --blush:        #e8d5c4;
+  --dusty-rose:   #c9a99a;
+  --sage:         #a8b8a0;
+  --sage-dark:    #7a9170;
+  --slate-blue:   #8fa3b1;
+  --ink:          #3d3530;
+  --ink-light:    #6b5f59;
+  --warm-white:   #faf7f2;
+  --border:       rgba(120, 90, 70, 0.18);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Lora', 'Times New Roman', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: linear-gradient(180deg, #f4ede3 0%, #efe6d8 100%);
+  min-height: 100vh;
+  font-size: 17px;
+}
+
+/* ============================================
+   HEADER
+============================================ */
+.landing-header {
+  padding: 1.2rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(120, 90, 70, 0.12);
+  backdrop-filter: blur(12px);
+  background: rgba(245, 240, 232, 0.88);
+}
+
+.site-logo {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  position: relative;
+}
+
+.site-logo::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 100%; height: 1.5px;
+  background: var(--dusty-rose);
+  transform: scaleX(0.3);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.site-logo:hover::after { transform: scaleX(1); }
+
+.header-nav { display: flex; gap: 0.5rem; align-items: center; }
+
+.nav-link-vintage {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  text-decoration: none;
+  padding: 0.4rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  background: none;
+  cursor: pointer;
+}
+.nav-link-vintage:hover {
+  color: var(--ink);
+  border-color: var(--border);
+  background: rgba(255,255,255,0.5);
+}
+
+/* ============================================
+   PAGE LAYOUT
+============================================ */
+.page-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 7.5rem 1.5rem 5rem;
+}
+
+/* ============================================
+   PAGE HEADER
+============================================ */
+.page-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dusty-rose);
+  margin-bottom: 0.8rem;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.page-subtitle {
+  color: var(--ink-light);
+  line-height: 1.75;
+  margin-bottom: 3rem;
+}
+
+.vintage-rule {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.8rem;
+}
+.vintage-rule::before, .vintage-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--dusty-rose), transparent);
+}
+.vintage-rule-icon { color: var(--dusty-rose); font-size: 0.9rem; }
+
+/* ============================================
+   FORM CARD
+============================================ */
+.form-card {
+  background: rgba(250, 247, 242, 0.78);
+  backdrop-filter: blur(16px);
+  border-radius: 30px;
+  padding: 2.8rem;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.09);
+}
+
+/* ============================================
+   FORM FIELDS
+============================================ */
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 0.35rem;
+}
+
+.form-hint {
+  font-size: 1.05rem;
+  color: var(--ink-light);
+  font-style: italic;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--ink);
+  background: rgba(255,255,255,0.65);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  resize: none;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--dusty-rose);
+  box-shadow: 0 0 0 3px rgba(201,169,154,0.18);
+  background: rgba(255,255,255,0.9);
+}
+
+.form-input.is-invalid,
+.form-textarea.is-invalid {
+  border-color: #b85050;
+  box-shadow: 0 0 0 3px rgba(184,80,80,0.1);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(200,190,180,0.25);
+}
+
+.form-textarea { height: 110px; line-height: 1.65; }
+
+.char-count {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--ink-light);
+  margin-top: 0.35rem;
+  transition: color 0.2s;
+}
+.char-count.near  { color: #c8853a; }
+.char-count.at    { color: #b85050; }
+
+.field-error {
+  font-size: 0.8rem;
+  color: #b85050;
+  margin-top: 0.35rem;
+  min-height: 1.1rem;
+}
+
+/* ============================================
+   MEMBER LIMIT SLIDER
+============================================ */
+.member-limit-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.member-limit-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  border-radius: 99px;
+  background: linear-gradient(to right, var(--dusty-rose) 0%, var(--dusty-rose) var(--pct, 18%), rgba(120,90,70,0.18) var(--pct, 18%));
+  outline: none;
+  cursor: pointer;
+}
+
+.member-limit-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--warm-white);
+  border: 2px solid var(--dusty-rose);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.member-limit-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.member-limit-slider::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--warm-white);
+  border: 2px solid var(--dusty-rose);
+  cursor: pointer;
+}
+
+.member-limit-display {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--ink);
+  min-width: 3rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.member-limit-display span {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-top: 0.2rem;
+}
+
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 11px;
+}
+
+.slider-tick {
+  font-size: 0.78rem;
+  color: var(--ink-light);
+  text-align: center;
+  cursor: pointer;
+}
+
+/* ============================================
+   BACKGROUND PICKER
+============================================ */
+.bg-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+}
+
+.bg-option {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 16/9;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2.5px solid transparent;
+}
+
+.bg-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+}
+
+.bg-option.selected {
+  border-color: var(--dusty-rose);
+  box-shadow: 0 0 0 3px rgba(201,169,154,0.3);
+}
+
+.bg-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bg-preview {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Video fills the bg-option card */
+.bg-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.bg-selected-tick {
+  position: absolute;
+  top: 0.5rem; right: 0.5rem;
+  width: 26px; height: 26px;
+  background: var(--dusty-rose);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 0.85rem;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 2;
+}
+
+.bg-option.selected .bg-selected-tick {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.bg-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+  color: rgba(255,255,255,0.9);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.6rem 0.7rem 0.5rem;
+}
+
+/* ============================================
+   LIVE PREVIEW
+============================================ */
+.preview-section {
+  margin-top: 2.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.preview-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dusty-rose);
+  margin-bottom: 1rem;
+}
+
+.preview-card {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+  position: relative;
+}
+
+.preview-bg {
+  height: 160px;
+  position: relative;
+}
+
+.preview-bg video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.preview-bg-fallback {
+  width: 100%; height: 100%;
+}
+
+.preview-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(15,8,4,0.6) 100%);
+}
+
+.preview-content {
+  background: rgba(250,247,242,0.96);
+  padding: 1.4rem 1.6rem;
+}
+
+.preview-club-tag {
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dusty-rose);
+  margin-bottom: 0.4rem;
+}
+
+.preview-club-name {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.preview-club-desc {
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+
+.preview-placeholder {
+  color: rgba(107,95,89,0.35);
+  font-style: italic;
+}
+
+/* ============================================
+   DIVIDER BETWEEN SECTIONS
+============================================ */
+.form-section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2.2rem 0;
+}
+
+.form-section-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.form-section-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(201,169,154,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--dusty-rose);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   SUBMIT BUTTON
+============================================ */
+.form-actions {
+  margin-top: 2.4rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-vintage {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--warm-white);
+  background: var(--ink);
+  padding: 0.9rem 2.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, background 0.3s ease;
+}
+.btn-vintage:hover { background: var(--ink-light); transform: translateY(-2px); }
+
+.btn-secondary {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.9rem 1.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.6); color: var(--ink); }
+
+.general-error {
+  width: 100%;
+  font-size: 0.85rem;
+  color: #b85050;
+  padding: 0.7rem 1rem;
+  background: rgba(184,80,80,0.07);
+  border-radius: 8px;
+  border: 1px solid rgba(184,80,80,0.2);
+  display: none;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 600px) {
+  .form-card { padding: 1.8rem 1.3rem; }
+  .bg-picker-grid { grid-template-columns: repeat(2, 1fr); }
+  .page-main { padding: 6.5rem 1rem 4rem; }
+}

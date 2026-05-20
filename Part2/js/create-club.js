@@ -259,10 +259,3 @@ document.getElementById("create-club-form").addEventListener("submit", function 
   }
 });
 
-// ============================================
-// LOGOUT
-// ============================================
-document.getElementById("logout-btn").addEventListener("click", () => {
-  localStorage.removeItem("bookies_session");
-  window.location.href = "login.html";
-});
