@@ -1,3 +1,4 @@
+// This script is used enter demo data into local storage on first start up.
 (function () {
   if (JSON.parse(localStorage.getItem("bookies_users") || "[]").length > 0) return;
 
