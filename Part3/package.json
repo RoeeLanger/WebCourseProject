@@ -1,0 +1,19 @@
+{
+  "name": "bookies",
+  "version": "1.0.0",
+  "description": "Bookies book-club app — Express + MySQL server for the Part 2 front-end.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.3.0",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

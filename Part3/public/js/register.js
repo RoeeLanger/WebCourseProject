@@ -1,0 +1,238 @@
+const SECURITY_QUESTIONS = [
+  "What is your favorite book?",
+  "Which book have you re-read the most?",
+  "What is the first book you remember reading?",
+  "Who is your favorite fictional character?",
+  "Which fictional place would you most like to live in?",
+  "What was your childhood nickname?",
+];
+
+const q1Select = document.getElementById("securityQ1");
+const q2Select = document.getElementById("securityQ2");
+
+// Option values are the question TEXT (not an index), so a plain form submit
+// posts the real question straight to the server.
+function buildOptions(selectEl, excludeValue = null) {
+  const current = selectEl.value;
+  // Keep the placeholder option
+  while (selectEl.options.length > 1) selectEl.remove(1);
+  SECURITY_QUESTIONS.forEach((q) => {
+    if (q === excludeValue) return;
+    const opt = document.createElement("option");
+    opt.value = q;
+    opt.textContent = q;
+    selectEl.appendChild(opt);
+  });
+  // Restore selection if still valid
+  if (current && current !== excludeValue) selectEl.value = current;
+}
+
+buildOptions(q1Select);
+buildOptions(q2Select);
+
+q1Select.addEventListener("change", () => {
+  if (q1Select.value === q2Select.value) q2Select.value = "";
+  buildOptions(q2Select, q1Select.value);
+  clearError("securityQ1Error");
+  q1Select.classList.remove("is-invalid");
+});
+
+q2Select.addEventListener("change", () => {
+  if (q2Select.value === q1Select.value) q2Select.value = "";
+  clearError("securityQ2Error");
+  q2Select.classList.remove("is-invalid");
+});
+
+// --- Toggle password visibility ---
+function addToggle(btnId, inputId) {
+  document.getElementById(btnId).addEventListener("click", function () {
+    const input = document.getElementById(inputId);
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    this.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+  });
+}
+
+addToggle("togglePw", "password");
+addToggle("toggleConfirmPw", "confirmPassword");
+
+const emailInput = document.getElementById("email");
+
+emailInput.addEventListener("blur", async function () {
+
+  const email = emailInput.value.trim();
+
+  clearError("emailError");
+  setInvalid("email", false);
+
+  if (!email) return;
+
+  try {
+    const { exists } = await Api.checkEmail(email);
+    if (exists) {
+      showError("emailError", "An account with this email already exists.");
+      setInvalid("email", true);
+    }
+  } catch (err) {
+    // Non-blocking: a failed blur check shouldn't stop the user typing.
+  }
+
+});
+
+// --- Validation helpers ---
+function showError(id, msg) {
+  document.getElementById(id).textContent = msg;
+}
+
+function clearError(id) {
+  document.getElementById(id).textContent = "";
+}
+
+function setInvalid(inputId, invalid) {
+  document.getElementById(inputId).classList.toggle("is-invalid", invalid);
+}
+
+// --- Form submit ---
+document.getElementById("registerForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const fields = ["username", "nickname", "email", "password", "confirmPassword", "securityQ1", "securityA1", "securityQ2", "securityA2"];
+  fields.forEach((id) => {
+    clearError(id + "Error");
+    setInvalid(id, false);
+  });
+  document.getElementById("generalError").textContent = "";
+
+  const username = document.getElementById("username").value.trim();
+  const nickname = document.getElementById("nickname").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const q1 = q1Select.value;
+  const securityA1 = document.getElementById("securityA1").value.trim();
+  const q2 = q2Select.value;
+  const securityA2 = document.getElementById("securityA2").value.trim();
+
+  let valid = true;
+
+  if (!username) {
+    showError("usernameError", "Username is required.");
+    setInvalid("username", true);
+    valid = false;
+  } else if (username.length < 3) {
+    showError("usernameError", "Username must be at least 3 characters.");
+    setInvalid("username", true);
+    valid = false;
+  } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    showError("usernameError", "Only letters, numbers and underscores allowed.");
+    setInvalid("username", true);
+    valid = false;
+  }
+
+  if (!nickname) {
+    showError("nicknameError", "Nickname is required.");
+    setInvalid("nickname", true);
+    valid = false;
+  } else if (nickname.length < 2) {
+    showError("nicknameError", "Nickname must be at least 2 characters.");
+    setInvalid("nickname", true);
+    valid = false;
+  }
+
+  if (!email) {
+    showError("emailError", "Email address is required.");
+    setInvalid("email", true);
+    valid = false;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showError("emailError", "Please enter a valid email address.");
+    setInvalid("email", true);
+    valid = false;
+  }
+
+  if (!password) {
+    showError("passwordError", "Password is required.");
+    setInvalid("password", true);
+    valid = false;
+  } else if (password.length < 8) {
+    showError("passwordError", "Password must be at least 8 characters.");
+    setInvalid("password", true);
+    valid = false;
+  } else if (!/[A-Z]/.test(password)) {
+    showError("passwordError", "Password must contain at least one uppercase letter.");
+    setInvalid("password", true);
+    valid = false;
+  } else if (!/[a-z]/.test(password)) {
+    showError("passwordError", "Password must contain at least one lowercase letter.");
+    setInvalid("password", true);
+    valid = false;
+  } else if (!/[0-9]/.test(password)) {
+    showError("passwordError", "Password must contain at least one number.");
+    setInvalid("password", true);
+    valid = false;
+  }
+
+  if (!confirmPassword) {
+    showError("confirmPasswordError", "Please confirm your password.");
+    setInvalid("confirmPassword", true);
+    valid = false;
+  } else if (password !== confirmPassword) {
+    showError("confirmPasswordError", "Passwords do not match.");
+    setInvalid("confirmPassword", true);
+    valid = false;
+  }
+
+  if (!q1) {
+    showError("securityQ1Error", "Please choose a security question.");
+    setInvalid("securityQ1", true);
+    valid = false;
+  }
+
+  if (!securityA1) {
+    showError("securityA1Error", "Please provide an answer.");
+    setInvalid("securityA1", true);
+    valid = false;
+  }
+
+  if (!q2) {
+    showError("securityQ2Error", "Please choose a security question.");
+    setInvalid("securityQ2", true);
+    valid = false;
+  }
+
+  if (!securityA2) {
+    showError("securityA2Error", "Please provide an answer.");
+    setInvalid("securityA2", true);
+    valid = false;
+  }
+
+  if (!valid) return;
+
+  // q1/q2 are the selected question TEXT (option values are the questions).
+  const payload = {
+    username,
+    nickname,
+    email,
+    password,
+    q1,
+    a1: securityA1,
+    q2,
+    a2: securityA2,
+  };
+
+  try {
+    await Api.register(payload);
+    window.location.href = "login.html";
+  } catch (err) {
+    // Map the server's 409/400 message back onto the relevant field.
+    const msg = (err && err.message) || "Could not create account.";
+    if (/username/i.test(msg)) {
+      showError("usernameError", msg);
+      setInvalid("username", true);
+    } else if (/email/i.test(msg)) {
+      showError("emailError", msg);
+      setInvalid("email", true);
+    } else {
+      document.getElementById("generalError").textContent = msg;
+    }
+  }
+});

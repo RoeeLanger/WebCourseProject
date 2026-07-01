@@ -1,0 +1,108 @@
+calendar
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookies - My Schedule</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital@0;1&display=swap">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/profile.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/calendar.css">
+
+</head>
+
+<body>
+
+  <!-- MAIN -->
+  <main class="calendar-main">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <p class="page-eyebrow">Your Reading Life</p>
+        <h1 class="page-title">My Schedule</h1>
+      </div>
+
+      <div class="view-toggle">
+        <button class="view-btn active" id="btn-grid" onclick="setView('grid')">Calendar</button>
+        <button class="view-btn" id="btn-list" onclick="setView('list')">List</button>
+      </div>
+    </div>
+
+    <!-- Club legend (rendered by JS) -->
+    <div class="club-legend" id="club-legend"></div>
+
+    <!-- Month navigation -->
+    <div class="month-nav">
+      <button class="month-btn" id="prev-month" onclick="changeMonth(-1)">←</button>
+      <span class="month-label" id="month-label"></span>
+      <button class="month-btn" id="next-month" onclick="changeMonth(1)">→</button>
+    </div>
+
+    <!-- Grid view -->
+    <div id="view-grid">
+      <div class="calendar-grid-wrap">
+        <div class="weekday-row">
+          <div class="weekday-label">Sun</div>
+          <div class="weekday-label">Mon</div>
+          <div class="weekday-label">Tue</div>
+          <div class="weekday-label">Wed</div>
+          <div class="weekday-label">Thu</div>
+          <div class="weekday-label">Fri</div>
+          <div class="weekday-label">Sat</div>
+        </div>
+        <div class="calendar-cells" id="cal-cells"></div>
+      </div>
+    </div>
+
+    <!-- List view -->
+    <div id="view-list">
+      <div id="list-container"></div>
+    </div>
+
+  </main>
+
+  <!-- Event detail modal -->
+  <div class="modal-overlay" id="event-modal-overlay" onclick="closeEventModal(event)">
+    <div class="event-modal">
+      <button class="modal-close" onclick="closeEventModalDirect()">✕</button>
+      <div class="modal-event-name" id="modal-event-name"></div>
+      <div class="modal-details">
+        <div class="modal-detail-row">
+          <span class="modal-detail-icon">📅</span>
+          <span class="modal-detail-text" id="modal-date"></span>
+        </div>
+        <div class="modal-detail-row">
+          <span class="modal-detail-icon">🕐</span>
+          <span class="modal-detail-text" id="modal-time"></span>
+        </div>
+        <div class="modal-detail-row">
+          <span class="modal-detail-icon">📍</span>
+          <span class="modal-detail-text" id="modal-location"></span>
+        </div>
+        <div class="modal-detail-row">
+          <span class="modal-detail-icon">📚</span>
+          <span class="modal-detail-text" id="modal-club"></span>
+        </div>
+        <div class="modal-detail-row" id="modal-desc-row" style="display:none;">
+          <span class="modal-detail-icon">📝</span>
+          <span class="modal-detail-text" id="modal-desc"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global floating pill tooltip -->
+  <div id="pill-tooltip-global"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/calendar.js"></script>
+
+</body>
+</html>

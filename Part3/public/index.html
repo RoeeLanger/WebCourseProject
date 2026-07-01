@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Bookies - Book Club Manager</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body class="landing-page">
+
+  <!-- ===== HEADER ===== -->
+  <header class="landing-header">
+
+    <a href="index.html" class="site-logo">
+      Bookies
+    </a>
+
+    <nav class="header-nav">
+
+      <a href="login.html" class="nav-link-vintage">
+        Sign In
+      </a>
+
+      <a href="register.html" class="nav-link-vintage primary">
+        Join
+      </a>
+
+    </nav>
+
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="landing-hero">
+
+    <!-- VIDEO -->
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      class="hero-video"
+    >
+      <source src="videos/Fireplace_Background.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-overlay"></div>
+
+    <!-- CONTENT -->
+    <div class="hero-content">
+
+      <p class="hero-eyebrow">
+        Welcome to Bookies
+      </p>
+
+      <h1 class="hero-title">
+        Your next chapter<br>
+        starts here.
+      </h1>
+
+      <p class="hero-subtitle">
+        Gather your readers, share your thoughts, and keep every book club beautifully organised - all in one place.
+      </p>
+
+      <div class="hero-buttons">
+
+        <a href="register.html" class="btn-vintage">
+          Join for Free
+        </a>
+
+        <a href="login.html" class="hero-secondary-link">
+          Already have an account? Sign in →
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section class="features-section">
+
+    <div class="features-intro">
+
+      <p class="section-eyebrow">
+        Bookies Experience
+      </p>
+
+      <h2 class="features-title">
+        Everything your club needs
+      </h2>
+
+    </div>
+
+    <div class="features-grid">
+
+  <article class="feature-card">
+
+    <span class="feature-icon">
+      ✦
+    </span>
+
+    <h3 class="feature-title">
+      Create Clubs
+    </h3>
+
+    <p class="feature-text">
+      Open your own reading club
+      and manage members, books
+      and discussions.
+    </p>
+
+  </article>
+
+  <article class="feature-card">
+
+    <span class="feature-icon">
+      ✦
+    </span>
+
+    <h3 class="feature-title">
+      Join Clubs
+    </h3>
+
+    <p class="feature-text">
+      Discover reading clubs
+      created by other readers
+      and explore books together.
+    </p>
+
+  </article>
+
+  <article class="feature-card">
+
+    <span class="feature-icon">
+      ✦
+    </span>
+
+    <h3 class="feature-title">
+      Attend Meetings
+    </h3>
+
+    <p class="feature-text">
+      Stay connected with upcoming
+      club meetings, events
+      and reading sessions.
+    </p>
+
+  </article>
+
+</div>
+
+  </section>
+
+  <!-- ===== BOOK ANIMATION ===== -->
+<section class="book-animation-section">
+
+<dotlottie-player
+  id="bookAnimation"
+  src="animations/Books.lottie"
+  background="transparent"
+  speed="0.6"
+  autoplay>
+</dotlottie-player>
+
+</section>
+
+  <!-- ===== QUOTE SECTION ===== -->
+  <section class="quote-section">
+
+    <div class="quote-box">
+
+      <p class="quote-text">
+        “Stories are better when shared.”
+      </p>
+
+    </div>
+
+  </section>
+
+<script
+  type="module"
+  src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs">
+</script>
+
+<script>
+
+const player = document.getElementById("bookAnimation");
+
+player.addEventListener("complete", () => {
+
+  setTimeout(() => {
+    player.seek(0);
+    player.play();
+  }, 1250);
+
+});
+
+</script>
+
+<script src="js/api.js"></script>
+<script src="js/components.js"></script>
+<script>initFooter();</script>
+
+
+
+</body>
+
+</html>

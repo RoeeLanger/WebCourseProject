@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookies - Create a Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital@0;1&display=swap">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/create-club.css">
+
+</head>
+
+<body>
+
+
+  <main class="page-main">
+
+    <!-- PAGE HEADER -->
+    <p class="page-eyebrow" id="page-eyebrow">Start something new</p>
+    <h1 class="page-title" id="page-title">Create a Club</h1>
+    <p class="page-subtitle" id="page-subtitle">Give your club a home - fill in the details below and invite your fellow readers.</p>
+
+    <div class="vintage-rule"><span class="vintage-rule-icon">✦</span></div>
+
+    <!-- FORM CARD -->
+    <div class="form-card">
+      <form id="create-club-form" action="/api/clubs" method="POST" novalidate>
+
+        <!-- ── SECTION 1: IDENTITY ── -->
+        <div class="form-section-title">
+          <span class="form-section-num">1</span>
+          Identity
+        </div>
+
+        <!-- Club name -->
+        <div class="form-group">
+          <label class="form-label" for="club-name">Club Name</label>
+          <span class="form-hint" id="club-name-hint">Up to 40 characters. Any letters, numbers or symbols.</span>
+          <input class="form-input" type="text" id="club-name" name="title" placeholder="e.g. Fantasy Lovers" maxlength="40" autocomplete="off">
+          <div class="char-count" id="club-name-count">0 / 40</div>
+          <div class="field-error" id="club-name-error"></div>
+        </div>
+
+        <!-- Club description -->
+        <div class="form-group">
+          <label class="form-label" for="club-desc">Description</label>
+          <span class="form-hint">What's this club about? Up to 133 characters.</span>
+          <textarea class="form-textarea" id="club-desc" name="description" placeholder="e.g. A cozy club for fantasy lovers, dragons, morally questionable characters and emotional damage." maxlength="133"></textarea>
+          <div class="char-count" id="club-desc-count">0 / 133</div>
+          <div class="field-error" id="club-desc-error"></div>
+        </div>
+
+        <div class="form-section-divider"></div>
+
+        <!-- ── SECTION 2: BACKGROUND ── -->
+        <div class="form-section-title">
+          <span class="form-section-num">2</span>
+          Club Background
+        </div>
+
+        <div class="form-group">
+          <span class="form-hint" style="margin-bottom:1rem; display:block;">Choose a video background that will appear at the top of your club page.</span>
+
+          <div class="bg-picker-grid" id="bg-picker-grid">
+
+            <label class="bg-option" data-val="videos/124105-730195435.mp4">
+              <input type="radio" name="background" value="videos/124105-730195435.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/124105-730195435.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Candlelit Pages</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/126997-737419656_medium.mp4">
+              <input type="radio" name="background" value="videos/126997-737419656_medium.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/126997-737419656_medium.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Rainy Afternoon</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/136081-764371377_medium.mp4">
+              <input type="radio" name="background" value="videos/136081-764371377_medium.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/136081-764371377_medium.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Morning Tea</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/188710-883612324.mp4">
+              <input type="radio" name="background" value="videos/188710-883612324.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/188710-883612324.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Scholar's Study</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/288559_tiny.mp4">
+              <input type="radio" name="background" value="videos/288559_tiny.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/288559_tiny.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Library Hearth</div>
+            </label>
+
+            <label class="bg-option" data-val="videos/Fireplace_Background.mp4">
+              <input type="radio" name="background" value="videos/Fireplace_Background.mp4">
+              <video class="bg-preview" autoplay muted loop playsinline><source src="videos/Fireplace_Background.mp4" type="video/mp4"></video>
+              <div class="bg-selected-tick">✓</div>
+              <div class="bg-label">Rainy Village</div>
+            </label>
+
+          </div>
+          <div class="field-error" id="bg-error"></div>
+        </div>
+
+        <div class="form-section-divider"></div>
+
+        <!-- ── SECTION 3: SETTINGS ── -->
+        <div class="form-section-title">
+          <span class="form-section-num">3</span>
+          Club Settings
+        </div>
+
+        <!-- Member limit -->
+        <div class="form-group">
+          <div class="member-limit-wrap">
+            <div class="member-limit-display" id="limit-display">
+              10
+              <span>members</span>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:0.4rem;">
+              <input
+                type="range"
+                class="member-limit-slider"
+                id="member-limit"
+                name="maxMembers"
+                min="2" max="50" step="1" value="10"
+              >
+              <div class="slider-ticks">
+                <span class="slider-tick" onclick="setLimit(2)">2</span>
+                <span class="slider-tick" onclick="setLimit(10)">10</span>
+                <span class="slider-tick" onclick="setLimit(20)">20</span>
+                <span class="slider-tick" onclick="setLimit(30)">30</span>
+                <span class="slider-tick" onclick="setLimit(40)">40</span>
+                <span class="slider-tick" onclick="setLimit(50)">50</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section-divider"></div>
+
+        <!-- ── LIVE PREVIEW ── -->
+        <div class="preview-section">
+          <div class="preview-label">✦ Live Preview</div>
+          <div class="preview-card">
+            <div class="preview-bg" id="preview-bg">
+              <div class="preview-bg-fallback bg-preview-1" id="preview-bg-fallback"></div>
+              <video id="preview-video" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;"></video>
+              <div class="preview-bg-overlay"></div>
+            </div>
+            <div class="preview-content">
+              <div class="preview-club-name" id="preview-name"><span class="preview-placeholder">Club Name</span></div>
+              <div class="preview-club-desc" id="preview-desc"><span class="preview-placeholder">Your description will appear here…</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ACTIONS ── -->
+        <div class="form-actions">
+          <div class="general-error" id="general-error">Please fix the errors above before continuing.</div>
+          <button type="submit" class="btn-vintage" id="submit-btn">Create Club ✦</button>
+          <a href="profile.html" class="btn-secondary" id="cancel-btn">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/create-club.js"></script>
+  <script>
+    initAppHeader([{ href: 'profile.html', label: 'My Profile' }]);
+    initFooter();
+  </script>
+
+</body>
+</html>
