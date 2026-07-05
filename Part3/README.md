@@ -118,4 +118,3 @@ directly so they work without JavaScript; client JS progressively enhances them 
 - **Polls:** `POST /api/clubs/:title/polls`, `POST /api/polls/:pollId/vote`, `DELETE /api/polls/:pollId`
 - **Books read / ratings:** `POST /api/clubs/:title/books-read`, `PUT /api/books-read/:id/rating`
 
-See [ASSUMPTIONS.md](ASSUMPTIONS.md) for the working assumptions made in this submission.
